@@ -167,7 +167,7 @@ export const SmartSearchBar = ({
       {showSuggestions && totalSuggestions > 0 && (
         <Card 
           ref={suggestionsRef}
-          className="absolute top-full left-0 right-0 mt-1 z-50 bg-card border-border/50 shadow-lg max-h-96 overflow-y-auto"
+          className="absolute top-full left-0 right-0 mt-1 z-[9999] bg-card border-border/50 shadow-lg max-h-96 overflow-y-auto"
         >
           <CardContent className="p-0">
             {/* Suggestions de restaurants */}
