@@ -4,6 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, X, Leaf, Sprout, Clock, Calendar } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { SmartSearchBar } from "./SmartSearchBar";
+import { Restaurant, Plat } from "@/data/restaurants";
+
+interface PlatWithRestaurant extends Plat {
+  restaurant: {
+    id: string;
+    nom: string;
+    adresse: string;
+    chef: string | null;
+  };
+}
 
 interface FilterBarProps {
   searchTerm: string;
@@ -16,6 +27,13 @@ interface FilterBarProps {
   onServiceChange: (service: string | null) => void;
   selectedDate: {jour: number, mois: number} | null;
   onDateChange: (date: {jour: number, mois: number} | null) => void;
+  // Nouvelles props pour la recherche intelligente
+  restaurants?: Restaurant[];
+  plats?: PlatWithRestaurant[];
+  onRestaurantSelect?: (restaurant: Restaurant) => void;
+  currentViewMode?: 'restaurants' | 'plats';
+  onViewModeChange?: (mode: 'restaurants' | 'plats') => void;
+  useSmartSearch?: boolean;
 }
 
 export const FilterBar = ({
@@ -28,7 +46,13 @@ export const FilterBar = ({
   selectedService,
   onServiceChange,
   selectedDate,
-  onDateChange
+  onDateChange,
+  restaurants = [],
+  plats = [],
+  onRestaurantSelect,
+  currentViewMode = 'restaurants',
+  onViewModeChange,
+  useSmartSearch = false
 }: FilterBarProps) => {
   const [showFilters, setShowFilters] = useState(false);
 
@@ -69,15 +93,27 @@ export const FilterBar = ({
     <div className="space-y-4">
       {/* Barre de recherche principale */}
       <div className="flex gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Rechercher un restaurant ou un plat..."
-            value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 bg-card border-border/50 focus:ring-primary"
+        {useSmartSearch && onRestaurantSelect && onViewModeChange ? (
+          <SmartSearchBar
+            searchTerm={searchTerm}
+            onSearchChange={onSearchChange}
+            restaurants={restaurants}
+            plats={plats}
+            onRestaurantSelect={onRestaurantSelect}
+            currentViewMode={currentViewMode}
+            onViewModeChange={onViewModeChange}
           />
-        </div>
+        ) : (
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher un restaurant ou un plat..."
+              value={searchTerm}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className="pl-10 bg-card border-border/50 focus:ring-primary"
+            />
+          </div>
+        )}
         
         <Button
           variant="outline"
