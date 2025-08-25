@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Fond rond en couleur sable/beige -->
+  <circle cx="32" cy="32" r="30" fill="#F5E6D3" stroke="#D4A574" stroke-width="2"/>
+  
+  <!-- Pois chiche principal -->
+  <ellipse cx="32" cy="28" rx="12" ry="10" fill="#DEB887" stroke="#B8860B" stroke-width="1"/>
+  
+  <!-- Petits pois chiches autour -->
+  <ellipse cx="22" cy="38" rx="5" ry="4" fill="#DEB887" stroke="#B8860B" stroke-width="0.5"/>
+  <ellipse cx="42" cy="35" rx="4" ry="3" fill="#DEB887" stroke="#B8860B" stroke-width="0.5"/>
+  <ellipse cx="28" cy="45" rx="3" ry="2.5" fill="#DEB887" stroke="#B8860B" stroke-width="0.5"/>
+  <ellipse cx="38" cy="18" rx="3.5" ry="3" fill="#DEB887" stroke="#B8860B" stroke-width="0.5"/>
+  
+  <!-- Texte stylisé "K•K" -->
+  <text x="32" y="52" font-family="Arial, sans-serif" font-size="8" font-weight="bold" text-anchor="middle" fill="#8B4513">K•K</text>
+</svg>
