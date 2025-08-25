@@ -1,13 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Leaf, Sprout, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Leaf, Sprout, Calendar, Share2, Eye } from "lucide-react";
 import { Plat } from "@/data/restaurants";
 
 interface PlatCardProps {
   plat: Plat;
+  restaurantId?: string;
+  platIndex?: number;
+  onViewDetails?: () => void;
+  onShare?: () => void;
 }
 
-export const PlatCard = ({ plat }: PlatCardProps) => {
+export const PlatCard = ({ plat, restaurantId, platIndex, onViewDetails, onShare }: PlatCardProps) => {
   const formatDatesWithServices = (dates: { jour: number; mois: number }[], services: string[]) => {
     if (dates.length === 0) return "Dates non spécifiées";
     
@@ -68,6 +73,34 @@ export const PlatCard = ({ plat }: PlatCardProps) => {
           <Calendar className="h-4 w-4 flex-shrink-0" />
           <span>{formatDatesWithServices(plat.dates, plat.services)}</span>
         </div>
+
+        {/* Boutons d'action */}
+        {(onViewDetails || onShare) && (
+          <div className="flex gap-2 pt-3 border-t border-border/50">
+            {onViewDetails && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onViewDetails}
+                className="flex-1 border-border/50"
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                Voir détails
+              </Button>
+            )}
+            {onShare && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onShare}
+                className="flex-1 border-border/50"
+              >
+                <Share2 className="h-4 w-4 mr-2" />
+                Partager
+              </Button>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

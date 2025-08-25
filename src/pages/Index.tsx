@@ -3,14 +3,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, MapPin, Sparkles, Loader2, UtensilsCrossed, Store } from "lucide-react";
+import { Calendar, MapPin, Sparkles, Loader2, UtensilsCrossed, Store, ExternalLink, Info } from "lucide-react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { fetchRestaurants, Restaurant, Plat } from "@/data/restaurants";
 import { RestaurantCard } from "@/components/RestaurantCard";
 import { RestaurantDetail } from "@/components/RestaurantDetail";
 import { PlatCard } from "@/components/PlatCard";
+import { PlatDetail } from "@/components/PlatDetail";
 import { FilterBar } from "@/components/FilterBar";
 import Map from "@/components/Map";
 import heroImage from "@/assets/hero-kouss-kouss.jpg";
+import { toast } from "sonner";
 
 // Interface pour un plat enrichi avec les infos du restaurant
 interface PlatWithRestaurant extends Plat {
@@ -23,7 +26,11 @@ interface PlatWithRestaurant extends Plat {
 }
 
 const Index = () => {
+  const { restaurantId, platIndex } = useParams();
+  const navigate = useNavigate();
+  
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
+  const [selectedPlat, setSelectedPlat] = useState<{ plat: Plat; restaurant: Restaurant; index: number } | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showVegetarian, setShowVegetarian] = useState(false);
   const [showVegan, setShowVegan] = useState(false);
@@ -56,6 +63,47 @@ const Index = () => {
 
     loadRestaurants();
   }, []);
+
+  // Gérer les paramètres d'URL pour restaurant et plat spécifiques
+  useEffect(() => {
+    if (!restaurants.length) return;
+
+    if (restaurantId && platIndex) {
+      // Affichage d'un plat spécifique
+      const restaurant = restaurants.find(r => r.id === restaurantId);
+      if (restaurant) {
+        const index = parseInt(platIndex);
+        if (index >= 0 && index < restaurant.plats.length) {
+          setSelectedPlat({
+            plat: restaurant.plats[index],
+            restaurant,
+            index
+          });
+          setSelectedRestaurant(null);
+        } else {
+          // Index de plat invalide, rediriger vers le restaurant
+          navigate(`/restaurant/${restaurantId}`, { replace: true });
+        }
+      } else {
+        // Restaurant non trouvé, rediriger vers l'accueil
+        navigate("/", { replace: true });
+      }
+    } else if (restaurantId) {
+      // Affichage d'un restaurant spécifique
+      const restaurant = restaurants.find(r => r.id === restaurantId);
+      if (restaurant) {
+        setSelectedRestaurant(restaurant);
+        setSelectedPlat(null);
+      } else {
+        // Restaurant non trouvé, rediriger vers l'accueil
+        navigate("/", { replace: true });
+      }
+    } else {
+      // Page d'accueil
+      setSelectedRestaurant(null);
+      setSelectedPlat(null);
+    }
+  }, [restaurants, restaurantId, platIndex, navigate]);
 
   // Création de la liste des plats enrichis
   const allPlats = useMemo(() => {
@@ -172,13 +220,73 @@ const Index = () => {
     return filteredRestaurants;
   }, [filteredRestaurants, searchFromSmartBar, selectedRestaurant, showVegetarian, showVegan, selectedService, selectedDate]);
 
+  // Fonctions de navigation et partage
+  const handleViewPlatDetails = (restaurant: Restaurant, platIndex: number) => {
+    navigate(`/restaurant/${restaurant.id}/plat/${platIndex}`);
+  };
+
+  const handleSharePlat = async (restaurant: Restaurant, platIndex: number) => {
+    const shareUrl = `${window.location.origin}/restaurant/${restaurant.id}/plat/${platIndex}`;
+    const plat = restaurant.plats[platIndex];
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${plat.nom} - ${restaurant.nom}`,
+          text: `Découvrez "${plat.nom}" chez ${restaurant.nom} lors du festival Kouss Kouss 2025`,
+          url: shareUrl,
+        });
+      } catch (error) {
+        // L'utilisateur a annulé le partage ou erreur
+        await copyToClipboard(shareUrl, plat.nom);
+      }
+    } else {
+      await copyToClipboard(shareUrl, plat.nom);
+    }
+  };
+
+  const copyToClipboard = async (url: string, platName: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success(`Lien pour "${platName}" copié dans le presse-papiers !`);
+    } catch (error) {
+      toast.error("Erreur lors de la copie du lien");
+    }
+  };
+
+  const handleBackToHome = () => {
+    navigate("/");
+  };
+
+  const handleBackToRestaurant = (restaurantId: string) => {
+    navigate(`/restaurant/${restaurantId}`);
+  };
+
+  // Affichage du détail d'un plat spécifique
+  if (selectedPlat) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
+          <PlatDetail
+            plat={selectedPlat.plat}
+            restaurant={selectedPlat.restaurant}
+            platIndex={selectedPlat.index}
+            onBack={handleBackToHome}
+            onViewRestaurant={() => handleBackToRestaurant(selectedPlat.restaurant.id!)}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Affichage du détail d'un restaurant spécifique
   if (selectedRestaurant) {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           <RestaurantDetail 
             restaurant={selectedRestaurant}
-            onBack={() => setSelectedRestaurant(null)}
+            onBack={handleBackToHome}
           />
         </div>
       </div>
@@ -264,6 +372,23 @@ const Index = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8">
+        {/* Bannière site non-officiel */}
+        <div className="mb-6">
+          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-blue-200/50 dark:border-blue-800/50">
+            <CardContent className="py-4">
+              <div className="flex items-center gap-3">
+                <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm text-blue-800 dark:text-blue-200">
+                    <strong>Site non-officiel</strong> • Ce site facilite la découverte du programme du festival. 
+                    Site officiel : <a href="https://kousskouss.com/" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">kousskouss.com</a>
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Stats rapides */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card className="bg-gradient-card border-border/50 shadow-card text-center">
@@ -307,8 +432,7 @@ const Index = () => {
           restaurants={restaurants}
           plats={allPlats}
           onRestaurantSelect={(restaurant) => {
-            setSelectedRestaurant(restaurant);
-            setSearchFromSmartBar(true);
+            navigate(`/restaurant/${restaurant.id}`);
           }}
           currentViewMode={viewMode}
           onViewModeChange={setViewMode}
@@ -396,8 +520,7 @@ const Index = () => {
                     <Map 
                       restaurants={displayedRestaurants}
                       onRestaurantSelect={(restaurant) => {
-                        setSelectedRestaurant(restaurant);
-                        setSearchFromSmartBar(false);
+                        navigate(`/restaurant/${restaurant.id}`);
                       }}
                       selectedRestaurant={selectedRestaurant}
                       className="w-full h-[500px] xl:h-[600px]"
@@ -425,15 +548,13 @@ const Index = () => {
                               : ''
                           }`}
                           onClick={() => {
-                            setSelectedRestaurant(restaurant);
-                            setSearchFromSmartBar(false);
+                            navigate(`/restaurant/${restaurant.id}`);
                           }}
                         >
                           <RestaurantCard
                             restaurant={restaurant}
                             onViewDetails={(restaurant) => {
-                              setSelectedRestaurant(restaurant);
-                              setSearchFromSmartBar(false);
+                              navigate(`/restaurant/${restaurant.id}`);
                             }}
                           />
                         </div>
@@ -448,8 +569,7 @@ const Index = () => {
                       key={restaurant.id}
                       restaurant={restaurant}
                       onViewDetails={(restaurant) => {
-                        setSelectedRestaurant(restaurant);
-                        setSearchFromSmartBar(false);
+                        navigate(`/restaurant/${restaurant.id}`);
                       }}
                     />
                   ))}
@@ -486,38 +606,81 @@ const Index = () => {
                 </Card>
               ) : (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {filteredPlats.map((plat, index) => (
-                    <div key={`${plat.restaurant.id}-${index}`}>
-                      <PlatCard plat={plat} />
-                      <div className="mt-2 p-3 bg-muted rounded-md">
-                        <p className="text-sm text-muted-foreground">
-                          <strong>Chez :</strong> {plat.restaurant.nom}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {plat.restaurant.adresse}
-                        </p>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="mt-2 border-border/50"
-                          onClick={() => {
-                            const restaurant = restaurants.find(r => r.id === plat.restaurant.id);
-                            if (restaurant) {
-                              setSelectedRestaurant(restaurant);
-                              setSearchFromSmartBar(false);
-                            }
-                          }}
-                        >
-                          Voir le restaurant
-                        </Button>
+                  {filteredPlats.map((plat, globalIndex) => {
+                    const restaurant = restaurants.find(r => r.id === plat.restaurant.id);
+                    const platIndex = restaurant?.plats.findIndex(p => p.nom === plat.nom && p.description === plat.description) || 0;
+                    
+                    return (
+                      <div key={`${plat.restaurant.id}-${globalIndex}`}>
+                        <PlatCard 
+                          plat={plat}
+                          restaurantId={plat.restaurant.id}
+                          platIndex={platIndex}
+                          onViewDetails={() => restaurant && handleViewPlatDetails(restaurant, platIndex)}
+                          onShare={() => restaurant && handleSharePlat(restaurant, platIndex)}
+                        />
+                        <div className="mt-2 p-3 bg-muted rounded-md">
+                          <p className="text-sm text-muted-foreground">
+                            <strong>Chez :</strong> {plat.restaurant.nom}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {plat.restaurant.adresse}
+                          </p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-2 border-border/50"
+                            onClick={() => {
+                              if (restaurant) {
+                                navigate(`/restaurant/${restaurant.id}`);
+                              }
+                            }}
+                          >
+                            Voir le restaurant
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </TabsContent>
           </Tabs>
         </div>
+
+        {/* Footer */}
+        <footer className="mt-16 border-t border-border/50 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-center md:text-left">
+              <h3 className="font-semibold text-foreground mb-2">Kouss Kouss 2025</h3>
+              <p className="text-sm text-muted-foreground">
+                Festival culinaire du Maghreb • 22 Août - 7 Septembre 2025 • Marseille
+              </p>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <Link 
+                to="/analytics" 
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Statistiques
+              </Link>
+              <Link 
+                to="/mentions-legales" 
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              >
+                Mentions légales
+                <ExternalLink className="h-3 w-3" />
+              </Link>
+            </div>
+          </div>
+          
+          <div className="mt-6 pt-4 border-t border-border/50 text-center">
+            <p className="text-xs text-muted-foreground">
+              © 2025 JG Conseil - Tous droits réservés
+            </p>
+          </div>
+        </footer>
       </div>
     </div>
   );

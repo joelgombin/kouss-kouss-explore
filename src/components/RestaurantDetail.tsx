@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Phone, ChefHat, Utensils } from "lucide-react";
 import { Restaurant } from "@/data/restaurants";
 import { PlatCard } from "./PlatCard";
+import MiniMap from "./MiniMap";
 
 interface RestaurantDetailProps {
   restaurant: Restaurant;
@@ -29,8 +30,8 @@ export const RestaurantDetail = ({ restaurant, onBack }: RestaurantDetailProps) 
       {/* Informations du restaurant */}
       <Card className="bg-gradient-card border-border/50 shadow-warm">
         <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="space-y-2">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+            <div className="flex-1 space-y-2">
               <CardTitle className="text-2xl font-bold text-foreground">
                 {restaurant.nom}
               </CardTitle>
@@ -55,7 +56,20 @@ export const RestaurantDetail = ({ restaurant, onBack }: RestaurantDetailProps) 
               </div>
             </div>
             
-            <Utensils className="h-8 w-8 text-primary flex-shrink-0" />
+            <div className="flex flex-col items-center lg:items-end gap-4">
+              <Utensils className="h-8 w-8 text-primary flex-shrink-0" />
+              
+              {/* Mini-carte de localisation - à droite en desktop, en bas sur mobile */}
+              {(restaurant.latitude && restaurant.longitude) && (
+                <div className="w-full lg:w-64 space-y-2">
+                  <h3 className="text-sm font-medium text-foreground flex items-center gap-2 lg:justify-end">
+                    <MapPin className="h-4 w-4" />
+                    Localisation
+                  </h3>
+                  <MiniMap restaurant={restaurant} height="200px" className="lg:w-64" />
+                </div>
+              )}
+            </div>
           </div>
         </CardHeader>
         
