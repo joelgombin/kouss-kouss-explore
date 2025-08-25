@@ -34,6 +34,7 @@ const Index = () => {
   const [error, setError] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(true);
   const [viewMode, setViewMode] = useState<'restaurants' | 'plats'>('restaurants');
+  const [searchFromSmartBar, setSearchFromSmartBar] = useState(false);
 
   // Charger les restaurants au montage du composant
   useEffect(() => {
@@ -130,6 +131,44 @@ const Index = () => {
       return matchesSearch && matchesDiet && matchesService && matchesDate;
     });
   }, [allPlats, searchTerm, showVegetarian, showVegan, selectedService, selectedDate]);
+
+  // Liste des restaurants à afficher (prend en compte le contexte de sélection)
+  const displayedRestaurants = useMemo(() => {
+    // Si un restaurant a été sélectionné via la SmartSearchBar et correspond aux critères,
+    // on s'assure qu'il est inclus dans la liste filtrée
+    if (searchFromSmartBar && selectedRestaurant) {
+      const restaurantMatchesFilters = (restaurant: Restaurant) => {
+        // Filtre par régime alimentaire
+        const matchesDiet = (!showVegetarian && !showVegan) || 
+          restaurant.plats.some(plat => 
+            (showVegetarian && plat.vegetarien) || 
+            (showVegan && plat.vegan)
+          );
+
+        // Filtre par service
+        const matchesService = !selectedService || 
+          restaurant.plats.some(plat => plat.services.includes(selectedService));
+
+        // Filtre par date
+        const matchesDate = !selectedDate || 
+          restaurant.plats.some(plat => 
+            plat.dates.some(date => 
+              date.jour === selectedDate.jour && date.mois === selectedDate.mois
+            )
+          );
+
+        return matchesDiet && matchesService && matchesDate;
+      };
+
+      // Si le restaurant sélectionné correspond aux autres filtres, on l'affiche en premier
+      if (restaurantMatchesFilters(selectedRestaurant)) {
+        const otherFilteredRestaurants = filteredRestaurants.filter(r => r.id !== selectedRestaurant.id);
+        return [selectedRestaurant, ...otherFilteredRestaurants];
+      }
+    }
+    
+    return filteredRestaurants;
+  }, [filteredRestaurants, searchFromSmartBar, selectedRestaurant, showVegetarian, showVegan, selectedService, selectedDate]);
 
   if (selectedRestaurant) {
     return (
@@ -265,7 +304,10 @@ const Index = () => {
           onDateChange={setSelectedDate}
           restaurants={restaurants}
           plats={allPlats}
-          onRestaurantSelect={setSelectedRestaurant}
+          onRestaurantSelect={(restaurant) => {
+            setSelectedRestaurant(restaurant);
+            setSearchFromSmartBar(true);
+          }}
           currentViewMode={viewMode}
           onViewModeChange={setViewMode}
           useSmartSearch={true}
@@ -310,7 +352,7 @@ const Index = () => {
                 )}
                 <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
                   {viewMode === 'restaurants' 
-                    ? `${filteredRestaurants.length} restaurant${filteredRestaurants.length > 1 ? 's' : ''}`
+                    ? `${displayedRestaurants.length} restaurant${displayedRestaurants.length > 1 ? 's' : ''}`
                     : `${filteredPlats.length} plat${filteredPlats.length > 1 ? 's' : ''}`
                   }
                 </Badge>
@@ -318,7 +360,7 @@ const Index = () => {
             </div>
 
             <TabsContent value="restaurants" className="mt-0">
-              {filteredRestaurants.length === 0 ? (
+              {displayedRestaurants.length === 0 ? (
                 <Card className="bg-gradient-card border-border/50 shadow-card">
                   <CardContent className="py-12 text-center">
                     <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -336,6 +378,7 @@ const Index = () => {
                         setShowVegan(false);
                         setSelectedService(null);
                         setSelectedDate(null);
+                        setSearchFromSmartBar(false);
                       }}
                       className="border-border/50"
                     >
@@ -349,8 +392,11 @@ const Index = () => {
                   {/* Carte */}
                   <div className="w-full xl:w-1/2">
                     <Map 
-                      restaurants={filteredRestaurants}
-                      onRestaurantSelect={setSelectedRestaurant}
+                      restaurants={displayedRestaurants}
+                      onRestaurantSelect={(restaurant) => {
+                        setSelectedRestaurant(restaurant);
+                        setSearchFromSmartBar(false);
+                      }}
                       selectedRestaurant={selectedRestaurant}
                       className="w-full h-[500px] xl:h-[600px]"
                     />
@@ -368,7 +414,7 @@ const Index = () => {
                     </div>
                     
                     <div className="max-h-[500px] xl:max-h-[600px] overflow-y-auto space-y-4 pr-2">
-                      {filteredRestaurants.map((restaurant) => (
+                      {displayedRestaurants.map((restaurant) => (
                         <div 
                           key={restaurant.id}
                           className={`transition-all duration-200 cursor-pointer ${
@@ -376,11 +422,17 @@ const Index = () => {
                               ? 'ring-2 ring-primary ring-offset-2' 
                               : ''
                           }`}
-                          onClick={() => setSelectedRestaurant(restaurant)}
+                          onClick={() => {
+                            setSelectedRestaurant(restaurant);
+                            setSearchFromSmartBar(false);
+                          }}
                         >
                           <RestaurantCard
                             restaurant={restaurant}
-                            onViewDetails={setSelectedRestaurant}
+                            onViewDetails={(restaurant) => {
+                              setSelectedRestaurant(restaurant);
+                              setSearchFromSmartBar(false);
+                            }}
                           />
                         </div>
                       ))}
@@ -393,7 +445,10 @@ const Index = () => {
                     <RestaurantCard
                       key={restaurant.id}
                       restaurant={restaurant}
-                      onViewDetails={setSelectedRestaurant}
+                      onViewDetails={(restaurant) => {
+                        setSelectedRestaurant(restaurant);
+                        setSearchFromSmartBar(false);
+                      }}
                     />
                   ))}
                 </div>
@@ -419,6 +474,7 @@ const Index = () => {
                         setShowVegan(false);
                         setSelectedService(null);
                         setSelectedDate(null);
+                        setSearchFromSmartBar(false);
                       }}
                       className="border-border/50"
                     >
@@ -444,7 +500,10 @@ const Index = () => {
                           className="mt-2 border-border/50"
                           onClick={() => {
                             const restaurant = restaurants.find(r => r.id === plat.restaurant.id);
-                            if (restaurant) setSelectedRestaurant(restaurant);
+                            if (restaurant) {
+                              setSelectedRestaurant(restaurant);
+                              setSearchFromSmartBar(false);
+                            }
                           }}
                         >
                           Voir le restaurant
