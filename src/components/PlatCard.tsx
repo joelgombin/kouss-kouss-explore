@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Leaf, Sprout, Calendar, Clock } from "lucide-react";
+import { Leaf, Sprout, Calendar } from "lucide-react";
 import { Plat } from "@/data/restaurants";
 
 interface PlatCardProps {
@@ -8,18 +8,26 @@ interface PlatCardProps {
 }
 
 export const PlatCard = ({ plat }: PlatCardProps) => {
-  const formatDates = (dates: { jour: number; mois: number }[]) => {
+  const formatDatesWithServices = (dates: { jour: number; mois: number }[], services: string[]) => {
     if (dates.length === 0) return "Dates non spécifiées";
     
-    const monthNames = ["", "Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
+    const monthNames = ["", "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
     
+    let dateText = "";
     if (dates.length <= 3) {
-      return dates.map(d => `${d.jour} ${monthNames[d.mois]}`).join(", ");
+      dateText = dates.map(d => `${d.jour} ${monthNames[d.mois]}`).join(", ");
     } else {
       const firstDate = dates[0];
       const lastDate = dates[dates.length - 1];
-      return `Du ${firstDate.jour} ${monthNames[firstDate.mois]} au ${lastDate.jour} ${monthNames[lastDate.mois]}`;
+      dateText = `Du ${firstDate.jour} ${monthNames[firstDate.mois]} au ${lastDate.jour} ${monthNames[lastDate.mois]}`;
     }
+    
+    // Ajouter les services à côté des dates
+    if (services.length > 0) {
+      dateText += ` (${services.join(", ")})`;
+    }
+    
+    return dateText;
   };
 
   return (
@@ -48,13 +56,6 @@ export const PlatCard = ({ plat }: PlatCardProps) => {
               Vegan
             </Badge>
           )}
-          
-          {plat.services.length > 0 && (
-            <Badge variant="outline" className="border-border/50">
-              <Clock className="h-3 w-3 mr-1" />
-              {plat.services.join(", ")}
-            </Badge>
-          )}
         </div>
       </CardHeader>
 
@@ -65,7 +66,7 @@ export const PlatCard = ({ plat }: PlatCardProps) => {
         
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Calendar className="h-4 w-4 flex-shrink-0" />
-          <span>{formatDates(plat.dates)}</span>
+          <span>{formatDatesWithServices(plat.dates, plat.services)}</span>
         </div>
       </CardContent>
     </Card>
