@@ -1,12 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Sparkles } from "lucide-react";
-import { restaurants, Restaurant } from "@/data/restaurants";
+import { Calendar, MapPin, Sparkles, Loader2 } from "lucide-react";
+import { fetchRestaurants, Restaurant } from "@/data/restaurants";
 import { RestaurantCard } from "@/components/RestaurantCard";
 import { RestaurantDetail } from "@/components/RestaurantDetail";
 import { FilterBar } from "@/components/FilterBar";
+import Map from "@/components/Map";
 import heroImage from "@/assets/hero-kouss-kouss.jpg";
 
 const Index = () => {
@@ -15,6 +16,30 @@ const Index = () => {
   const [showVegetarian, setShowVegetarian] = useState(false);
   const [showVegan, setShowVegan] = useState(false);
   const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<{jour: number, mois: number} | null>(null);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showMap, setShowMap] = useState(true);
+
+  // Charger les restaurants au montage du composant
+  useEffect(() => {
+    const loadRestaurants = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await fetchRestaurants();
+        setRestaurants(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erreur lors du chargement des restaurants');
+        console.error('Erreur lors du chargement des restaurants:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRestaurants();
+  }, []);
 
   // Filtrage des restaurants
   const filteredRestaurants = useMemo(() => {
@@ -38,9 +63,17 @@ const Index = () => {
       const matchesService = !selectedService || 
         restaurant.plats.some(plat => plat.services.includes(selectedService));
 
-      return matchesSearch && matchesDiet && matchesService;
+      // Filtre par date
+      const matchesDate = !selectedDate || 
+        restaurant.plats.some(plat => 
+          plat.dates.some(date => 
+            date.jour === selectedDate.jour && date.mois === selectedDate.mois
+          )
+        );
+
+      return matchesSearch && matchesDiet && matchesService && matchesDate;
     });
-  }, [searchTerm, showVegetarian, showVegan, selectedService]);
+  }, [restaurants, searchTerm, showVegetarian, showVegan, selectedService, selectedDate]);
 
   if (selectedRestaurant) {
     return (
@@ -51,6 +84,51 @@ const Index = () => {
             onBack={() => setSelectedRestaurant(null)}
           />
         </div>
+      </div>
+    );
+  }
+
+  // État de chargement
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="bg-gradient-card border-border/50 shadow-card p-8">
+          <CardContent className="flex flex-col items-center gap-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <h3 className="text-lg font-semibold text-foreground">
+              Chargement des restaurants...
+            </h3>
+            <p className="text-muted-foreground text-center">
+              Nous récupérons les dernières informations sur nos restaurants participants.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // État d'erreur
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="bg-gradient-card border-border/50 shadow-card p-8">
+          <CardContent className="flex flex-col items-center gap-4">
+            <Sparkles className="h-8 w-8 text-destructive" />
+            <h3 className="text-lg font-semibold text-foreground">
+              Erreur de chargement
+            </h3>
+            <p className="text-muted-foreground text-center max-w-md">
+              {error}
+            </p>
+            <Button
+              onClick={() => window.location.reload()}
+              variant="outline"
+              className="border-border/50"
+            >
+              Réessayer
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -127,6 +205,8 @@ const Index = () => {
           onVeganToggle={() => setShowVegan(!showVegan)}
           selectedService={selectedService}
           onServiceChange={setSelectedService}
+          selectedDate={selectedDate}
+          onDateChange={setSelectedDate}
         />
 
         {/* Liste des restaurants */}
@@ -135,9 +215,30 @@ const Index = () => {
             <h2 className="text-2xl font-bold text-foreground">
               Restaurants participants
             </h2>
-            <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
-              {filteredRestaurants.length} résultat{filteredRestaurants.length > 1 ? 's' : ''}
-            </Badge>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={!showMap ? "default" : "outline"}
+                  onClick={() => setShowMap(false)}
+                  size="sm"
+                  className="border-border/50"
+                >
+                  Liste
+                </Button>
+                <Button
+                  variant={showMap ? "default" : "outline"}
+                  onClick={() => setShowMap(true)}
+                  size="sm"
+                  className="border-border/50"
+                >
+                  <MapPin className="h-4 w-4 mr-2" />
+                  Carte
+                </Button>
+              </div>
+              <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                {filteredRestaurants.length} résultat{filteredRestaurants.length > 1 ? 's' : ''}
+              </Badge>
+            </div>
           </div>
 
           {filteredRestaurants.length === 0 ? (
@@ -157,6 +258,7 @@ const Index = () => {
                     setShowVegetarian(false);
                     setShowVegan(false);
                     setSelectedService(null);
+                    setSelectedDate(null);
                   }}
                   className="border-border/50"
                 >
@@ -164,6 +266,50 @@ const Index = () => {
                 </Button>
               </CardContent>
             </Card>
+          ) : showMap ? (
+            /* Vue hybride : carte + liste sur grands écrans, empilée sur petits écrans */
+            <div className="flex flex-col xl:flex-row gap-6">
+              {/* Carte */}
+              <div className="w-full xl:w-1/2">
+                <Map 
+                  restaurants={filteredRestaurants}
+                  onRestaurantSelect={setSelectedRestaurant}
+                  selectedRestaurant={selectedRestaurant}
+                  className="w-full h-[500px] xl:h-[600px]"
+                />
+              </div>
+              
+              {/* Liste des restaurants */}
+              <div className="w-full xl:w-1/2">
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    Restaurants sur la carte
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Cliquez sur un restaurant pour le localiser sur la carte
+                  </p>
+                </div>
+                
+                <div className="max-h-[500px] xl:max-h-[600px] overflow-y-auto space-y-4 pr-2">
+                  {filteredRestaurants.map((restaurant) => (
+                    <div 
+                      key={restaurant.id}
+                      className={`transition-all duration-200 cursor-pointer ${
+                        selectedRestaurant?.id === restaurant.id 
+                          ? 'ring-2 ring-primary ring-offset-2' 
+                          : ''
+                      }`}
+                      onClick={() => setSelectedRestaurant(restaurant)}
+                    >
+                      <RestaurantCard
+                        restaurant={restaurant}
+                        onViewDetails={setSelectedRestaurant}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredRestaurants.map((restaurant) => (

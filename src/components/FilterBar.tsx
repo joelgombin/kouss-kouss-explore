@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, X, Leaf, Sprout, Clock } from "lucide-react";
+import { Search, Filter, X, Leaf, Sprout, Clock, Calendar } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 interface FilterBarProps {
@@ -14,6 +14,8 @@ interface FilterBarProps {
   onVeganToggle: () => void;
   selectedService: string | null;
   onServiceChange: (service: string | null) => void;
+  selectedDate: {jour: number, mois: number} | null;
+  onDateChange: (date: {jour: number, mois: number} | null) => void;
 }
 
 export const FilterBar = ({
@@ -24,16 +26,42 @@ export const FilterBar = ({
   showVegan,
   onVeganToggle,
   selectedService,
-  onServiceChange
+  onServiceChange,
+  selectedDate,
+  onDateChange
 }: FilterBarProps) => {
   const [showFilters, setShowFilters] = useState(false);
 
-  const activeFiltersCount = [showVegetarian, showVegan, selectedService].filter(Boolean).length;
+  // Définition des dates du festival Kouss Kouss 2025
+  const festivalDates = [
+    // Août 2025
+    { jour: 22, mois: 8, label: "22 Août" },
+    { jour: 23, mois: 8, label: "23 Août" },
+    { jour: 24, mois: 8, label: "24 Août" },
+    { jour: 25, mois: 8, label: "25 Août" },
+    { jour: 26, mois: 8, label: "26 Août" },
+    { jour: 27, mois: 8, label: "27 Août" },
+    { jour: 28, mois: 8, label: "28 Août" },
+    { jour: 29, mois: 8, label: "29 Août" },
+    { jour: 30, mois: 8, label: "30 Août" },
+    { jour: 31, mois: 8, label: "31 Août" },
+    // Septembre 2025
+    { jour: 1, mois: 9, label: "1er Sept" },
+    { jour: 2, mois: 9, label: "2 Sept" },
+    { jour: 3, mois: 9, label: "3 Sept" },
+    { jour: 4, mois: 9, label: "4 Sept" },
+    { jour: 5, mois: 9, label: "5 Sept" },
+    { jour: 6, mois: 9, label: "6 Sept" },
+    { jour: 7, mois: 9, label: "7 Sept" }
+  ];
+
+  const activeFiltersCount = [showVegetarian, showVegan, selectedService, selectedDate].filter(Boolean).length;
 
   const clearAllFilters = () => {
-    onVegetarianToggle();
-    onVeganToggle();
+    if (showVegetarian) onVegetarianToggle();
+    if (showVegan) onVeganToggle();
     onServiceChange(null);
+    onDateChange(null);
     onSearchChange("");
   };
 
@@ -138,6 +166,28 @@ export const FilterBar = ({
                   <Clock className="h-4 w-4 mr-2" />
                   Soir
                 </Button>
+              </div>
+            </div>
+
+            {/* Filtre par date */}
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium text-muted-foreground">Date du festival</h4>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                {festivalDates.map((date) => {
+                  const isSelected = selectedDate?.jour === date.jour && selectedDate?.mois === date.mois;
+                  return (
+                    <Button
+                      key={`${date.jour}-${date.mois}`}
+                      variant={isSelected ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => onDateChange(isSelected ? null : { jour: date.jour, mois: date.mois })}
+                      className={`text-xs ${isSelected ? "bg-primary text-primary-foreground" : "border-border/50"}`}
+                    >
+                      <Calendar className="h-3 w-3 mr-1" />
+                      {date.label}
+                    </Button>
+                  );
+                })}
               </div>
             </div>
           </div>
