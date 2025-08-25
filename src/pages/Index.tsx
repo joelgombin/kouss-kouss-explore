@@ -35,6 +35,8 @@ const Index = () => {
   const [showMap, setShowMap] = useState(true);
   const [viewMode, setViewMode] = useState<'restaurants' | 'plats'>('restaurants');
   const [searchFromSmartBar, setSearchFromSmartBar] = useState(false);
+  
+
 
   // Charger les restaurants au montage du composant
   useEffect(() => {
