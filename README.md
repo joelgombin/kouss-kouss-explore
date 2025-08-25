@@ -1,73 +1,107 @@
-# Welcome to your Lovable project
+# Kouss Kouss 2025 - Guide des Restaurants
 
-## Project info
+Site web non-officiel pour découvrir les restaurants participants au festival culinaire Kouss Kouss 2025 à Marseille.
 
-**URL**: https://lovable.dev/projects/64ee1788-8061-44c5-bcfd-093428d4fb55
+## À propos du projet
 
-## How can I edit this code?
+Ce site facilite la découverte du programme du festival Kouss Kouss 2025. Il permet aux visiteurs de :
 
-There are several ways of editing your application.
+- Explorer les restaurants participants
+- Découvrir les plats authentiques du Maghreb
+- Localiser les établissements sur une carte interactive
+- Filtrer par régimes alimentaires (végétarien, vegan)
+- Consulter les dates et services disponibles
 
-**Use Lovable**
+**Dates du festival** : 22 août - 7 septembre 2025  
+**Lieu** : Marseille  
+**Site officiel** : [kousskouss.com](https://kousskouss.com/)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/64ee1788-8061-44c5-bcfd-093428d4fb55) and start prompting.
+## Technologies utilisées
 
-Changes made via Lovable will be committed automatically to this repo.
+Ce projet est développé avec :
 
-**Use your preferred IDE**
+- **Vite** - Build tool moderne
+- **TypeScript** - Typage statique
+- **React** - Interface utilisateur
+- **shadcn/ui** - Composants UI
+- **Tailwind CSS** - Styles
+- **React Router** - Navigation
+- **Leaflet** - Cartes interactives
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Installation et développement
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Prérequis : Node.js et npm installés ([installer avec nvm](https://github.com/nvm-sh/nvm#installing-and-updating))
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+```bash
+# Cloner le repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Naviguer vers le projet
+cd kouss-kouss-explore
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Installer les dépendances
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Lancer le serveur de développement
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Scripts disponibles
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# Développement avec rechargement automatique
+npm run dev
 
-**Use GitHub Codespaces**
+# Build de production
+npm run build
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Prévisualisation du build
+npm run preview
 
-## What technologies are used for this project?
+# Linting
+npm run lint
+```
 
-This project is built with:
+## Structure du projet
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```
+src/
+├── components/          # Composants React réutilisables
+│   ├── ui/             # Composants UI de base (shadcn/ui)
+│   ├── Map.tsx         # Carte interactive
+│   ├── RestaurantCard.tsx
+│   ├── PlatCard.tsx
+│   └── ...
+├── pages/              # Pages principales
+│   ├── Index.tsx       # Page d'accueil
+│   ├── Analytics.tsx   # Statistiques
+│   └── ...
+├── data/               # Données des restaurants
+├── hooks/              # Hooks React personnalisés
+├── lib/                # Utilitaires
+└── services/           # Services (analytics, etc.)
+```
 
-## How can I deploy this project?
+## Déploiement
 
-Simply open [Lovable](https://lovable.dev/projects/64ee1788-8061-44c5-bcfd-093428d4fb55) and click on Share -> Publish.
+Le projet peut être déployé sur n'importe quelle plateforme supportant les sites statiques :
 
-## Can I connect a custom domain to my Lovable project?
+- Vercel
+- Netlify
+- GitHub Pages
+- Firebase Hosting
 
-Yes, you can!
+```bash
+# Build de production
+npm run build
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+# Le dossier dist/ contient les fichiers à déployer
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Contribution
+
+Ce projet est maintenu de manière indépendante. Pour toute suggestion ou amélioration, n'hésitez pas à ouvrir une issue ou proposer une pull request.
+
+## Licence
+
+© 2025 JG Conseil - Tous droits réservés

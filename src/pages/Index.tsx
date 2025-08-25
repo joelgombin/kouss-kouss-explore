@@ -304,7 +304,7 @@ const Index = () => {
               Chargement des restaurants...
             </h3>
             <p className="text-muted-foreground text-center">
-              Nous récupérons les dernières informations sur nos restaurants participants.
+              Nous récupérons les dernières informations sur les restaurants participants.
             </p>
           </CardContent>
         </Card>
@@ -351,11 +351,10 @@ const Index = () => {
         <div className="relative container mx-auto px-4 h-full flex items-center">
           <div className="text-white space-y-4">
             <h1 className="text-5xl font-bold">
-              Kouss Kouss 2025
+              Kouss•Kouss 2025
             </h1>
             <p className="text-xl text-white/90 max-w-2xl">
-              Découvrez les saveurs authentiques du Maghreb lors de ce festival culinaire exceptionnel. 
-              Explorez les restaurants participants et leurs créations gourmandes.
+              On aime le couscous. On aime le festival Kouss•Kouss. On aime encore plus quand on peut savoir où manger du couscous à Kouss•Kouss.
             </p>
             <div className="flex items-center gap-4 text-white/80">
               <div className="flex items-center gap-2">
