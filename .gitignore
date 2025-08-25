@@ -23,3 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 restaurants_geolocalized.json
+
+# CapRover deployment files
+deploy.tar
+captain-definition
+deploy.sh
