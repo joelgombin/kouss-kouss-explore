@@ -7,36 +7,51 @@ All colors MUST be HSL.
 */
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+:root {
+    --background: 30 25% 98%;
+    --foreground: 20 14.3% 4.1%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 20 14.3% 4.1%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 20 14.3% 4.1%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Couleurs inspirées du couscous et des épices */
+    --primary: 25 95% 53%;
+    --primary-foreground: 60 9.1% 97.8%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 39 77% 91%;
+    --secondary-foreground: 25 95% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 39 40% 95%;
+    --muted-foreground: 25 5.3% 44.7%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 15 86% 88%;
+    --accent-foreground: 25 95% 25%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 39 30% 88%;
+    --input: 39 30% 88%;
+    --ring: 25 95% 53%;
 
-    --radius: 0.5rem;
+    /* Design tokens personnalisés */
+    --spice-orange: 25 95% 53%;
+    --spice-red: 15 86% 55%;
+    --golden-sand: 39 77% 85%;
+    --warm-cream: 39 40% 95%;
+    
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(25 95% 53%), hsl(15 86% 55%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(39 40% 98%));
+    
+    /* Shadows */
+    --shadow-warm: 0 4px 20px -4px hsl(25 95% 53% / 0.25);
+    --shadow-card: 0 2px 10px -2px hsl(25 30% 20% / 0.08);
+    
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 

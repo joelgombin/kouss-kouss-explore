@@ -61,7 +61,26 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Couleurs personnalisées du thème
+				spice: {
+					orange: 'hsl(var(--spice-orange))',
+					red: 'hsl(var(--spice-red))'
+				},
+				golden: {
+					sand: 'hsl(var(--golden-sand))'
+				},
+				warm: {
+					cream: 'hsl(var(--warm-cream))'
 				}
+			},
+			backgroundImage: {
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-card': 'var(--gradient-card)'
+			},
+			boxShadow: {
+				'warm': 'var(--shadow-warm)',
+				'card': 'var(--shadow-card)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
