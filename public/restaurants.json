@@ -1358,7 +1358,7 @@
     "geocoding_status": "success"
   },
   {
-    "nom": "GRENADE ET PISTACHE",
+    "nom": "GRENADE ET PISTACHE (Docks)",
     "adresse": "Les Docks, place de la Joliette - 13002",
     "telephone": "06 59 31 35 34",
     "chef": "FATIMA IKHLEF",
@@ -1729,8 +1729,8 @@
     "geocoding_status": "success"
   },
   {
-    "nom": "BACK CHICH",
-    "adresse": "60 rue Émile-Zola - 13009",
+    "nom": "BACK CHICH (Mazargues)",
+    "adresse": "60 rue Émile-Zola - 13009 Marseille",
     "telephone": "06 40 20 48 80",
     "chef": "GUILLAUME & JULIETTE",
     "plats": [
@@ -1818,7 +1818,7 @@
     "geocoding_status": "success"
   },
   {
-    "nom": "LUCIOLE",
+    "nom": "LUCIOLE (Rouet)",
     "adresse": "180 rue du rouet - 13008",
     "telephone": "04 65 85 53 48",
     "chef": "MARGAUX FARY ET ARTHUR GOZLAN DANTONI",
@@ -11723,7 +11723,7 @@
     "geocoding_status": "success"
   },
   {
-    "nom": "LA FONTAINE",
+    "nom": "LA FONTAINE (Cantini)",
     "adresse": "31 Av. Jules Cantini - 13006",
     "telephone": "04 91 79 05 02",
     "chef": null,
@@ -12329,7 +12329,7 @@
     "geocoding_status": "success"
   },
   {
-    "nom": "BACK CHICH",
+    "nom": "BACK CHICH (Opéra)",
     "adresse": "12 rue Corneille - 13001",
     "telephone": "06 40 20 48 80",
     "chef": "GUILLAUME & JULIETTE",
@@ -13792,7 +13792,7 @@
     "geocoding_status": "success"
   },
   {
-    "nom": "GRENADE ET PISTACHE",
+    "nom": "GRENADE ET PISTACHE (Saint Fé)",
     "adresse": "13 rue Saint Ferréol - 13001",
     "telephone": "06 59 31 35 34",
     "chef": "SAMAR ET NAHED DAMLAHKI",
@@ -15249,39 +15249,6 @@
     "geocoding_status": "success"
   },
   {
-    "nom": "DALLOYAU",
-    "adresse": "Les Terrassses du Port, 9 quai du Lazaret - 13002",
-    "telephone": "04 91 45 75 11",
-    "chef": null,
-    "plats": [
-      {
-        "nom": "Couscous de La Pente Douce",
-        "prix": "25-40€",
-        "description": "Le couscous est la spécialité emblématique de La Pente Douce, et lui a valu la reconnaissance de \"meilleur couscous de France\", par l'émission culinaire \"Très, Très Bon” salué pour ses cuissons, ses goûts et ses textures, et sa harissa!",
-        "vegetarien": false,
-        "vegan": false,
-        "dates": [
-          {
-            "jour": 3,
-            "mois": 9
-          },
-          {
-            "jour": 4,
-            "mois": 9
-          },
-          {
-            "jour": 5,
-            "mois": 9
-          }
-        ],
-        "services": []
-      }
-    ],
-    "longitude": 5.366023,
-    "latitude": 43.30735,
-    "geocoding_status": "success"
-  },
-  {
     "nom": "BURGER'S BANQUET",
     "adresse": "9 rue Molière - 13001",
     "telephone": "04 91 93 32 40",
@@ -16469,7 +16436,7 @@
     "geocoding_status": "success"
   },
   {
-    "nom": "CHARLY PIZZA",
+    "nom": "CHARLY PIZZA Bourse",
     "adresse": "7 place du Général-de-Gaulle - 13001",
     "telephone": "04 91 54 08 83",
     "chef": null,
