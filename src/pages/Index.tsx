@@ -14,6 +14,7 @@ import { FilterBar } from "@/components/FilterBar";
 import Map from "@/components/Map";
 import heroImage from "@/assets/hero-kouss-kouss.jpg";
 import { toast } from "sonner";
+import { useAnalytics } from "@/hooks/use-analytics";
 
 // Interface pour un plat enrichi avec les infos du restaurant
 interface PlatWithRestaurant extends Plat {
@@ -28,6 +29,9 @@ interface PlatWithRestaurant extends Plat {
 const Index = () => {
   const { restaurantId, platIndex } = useParams();
   const navigate = useNavigate();
+  
+  // Analytics tracking (déclenche automatiquement le tracking)
+  useAnalytics();
   
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const [selectedPlat, setSelectedPlat] = useState<{ plat: Plat; restaurant: Restaurant; index: number } | null>(null);

@@ -127,7 +127,8 @@ export const useAnalytics = () => {
   // Enregistrer une visite de page
   const trackPageView = async (pagePath: string = window.location.pathname) => {
     const currentAnalytics = loadAnalytics();
-    const { isNewVisitor, isNewSession } = handleVisitor();
+    // TEMPORAIRE : forcer nouveau visiteur/session pour test
+    const { isNewVisitor, isNewSession } = { isNewVisitor: true, isNewSession: true }; // handleVisitor();
     const today = getTodayKey();
     const now = new Date().toISOString();
 
@@ -152,16 +153,28 @@ export const useAnalytics = () => {
     saveAnalytics(updatedAnalytics);
 
     // Tracker globalement (async, sans bloquer l'UI)
+    console.log('🎯 Conditions de tracking:', {
+      isNewSession,
+      isNewVisitor,
+      sessionInfo: { isNewVisitor, isNewSession }
+    });
+    
     if (isNewSession) {
-      globalAnalytics.trackVisit().catch(() => {
-        // Ignorer les erreurs silencieusement
+      console.log('🚀 Déclenchement trackVisit() pour nouvelle session');
+      globalAnalytics.trackVisit().catch((error) => {
+        console.error('❌ Erreur trackVisit:', error);
       });
+    } else {
+      console.log('⏭️ Pas de nouvelle session, trackVisit() ignoré');
     }
 
     if (isNewVisitor) {
-      globalAnalytics.trackUniqueVisitor().catch(() => {
-        // Ignorer les erreurs silencieusement
+      console.log('🚀 Déclenchement trackUniqueVisitor() pour nouveau visiteur');
+      globalAnalytics.trackUniqueVisitor().catch((error) => {
+        console.error('❌ Erreur trackUniqueVisitor:', error);
       });
+    } else {
+      console.log('⏭️ Visiteur existant, trackUniqueVisitor() ignoré');
     }
   };
 

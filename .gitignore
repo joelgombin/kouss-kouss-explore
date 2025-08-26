@@ -28,3 +28,4 @@ restaurants_geolocalized.json
 deploy.tar
 captain-definition
 deploy.sh
+.env

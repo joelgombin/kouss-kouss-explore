@@ -337,7 +337,7 @@ export const AnalyticsPanel = ({ className = '' }: AnalyticsPanelProps) => {
               </p>
               {!globalStats && !loadingGlobal && (
                 <p className="text-xs text-orange-600">
-                  ⚠️ Impossible de charger les statistiques globales (mode hors ligne ou service indisponible).
+                  ⚠️ Statistiques globales indisponibles (CORS/réseau). Affichage des estimations basées sur l'activité locale.
                 </p>
               )}
             </div>
