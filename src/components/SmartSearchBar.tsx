@@ -190,7 +190,7 @@ export const SmartSearchBar = ({
                     <div className="font-medium">{restaurant.nom}</div>
                     <div className="text-sm text-muted-foreground">{restaurant.adresse}</div>
                     {restaurant.chef && (
-                      <div className="text-xs text-muted-foreground">Chef: {restaurant.chef}</div>
+                      <div className="text-xs text-muted-foreground">{restaurant.chef}</div>
                     )}
                   </div>
                 ))}
