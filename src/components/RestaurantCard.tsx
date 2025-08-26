@@ -37,7 +37,7 @@ export const RestaurantCard = ({ restaurant, onViewDetails }: RestaurantCardProp
           {restaurant.chef && (
             <div className="flex items-center gap-2">
               <ChefHat className="h-4 w-4 flex-shrink-0" />
-              <span className="font-medium text-foreground">Chef {restaurant.chef}</span>
+              <span className="font-medium text-foreground">{restaurant.chef}</span>
             </div>
           )}
         </div>
