@@ -162,7 +162,7 @@ export const PlatDetail = ({ plat, restaurant, platIndex, onBack, onViewRestaura
             <div>
               <h3 className="text-lg font-semibold text-foreground">{restaurant.nom}</h3>
               {restaurant.chef && (
-                <p className="text-muted-foreground">Chef : {restaurant.chef}</p>
+                <p className="text-muted-foreground">{restaurant.chef}</p>
               )}
             </div>
             
