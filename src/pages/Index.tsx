@@ -14,7 +14,7 @@ import { FilterBar } from "@/components/FilterBar";
 import Map from "@/components/Map";
 import heroImage from "@/assets/hero-kouss-kouss.jpg";
 import { toast } from "sonner";
-import { useAnalytics } from "@/hooks/use-analytics";
+
 
 // Interface pour un plat enrichi avec les infos du restaurant
 interface PlatWithRestaurant extends Plat {
@@ -30,8 +30,7 @@ const Index = () => {
   const { restaurantId, platIndex } = useParams();
   const navigate = useNavigate();
   
-  // Analytics tracking (déclenche automatiquement le tracking)
-  useAnalytics();
+
   
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const [selectedPlat, setSelectedPlat] = useState<{ plat: Plat; restaurant: Restaurant; index: number } | null>(null);
@@ -662,12 +661,7 @@ const Index = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row items-center gap-4">
-              <Link 
-                to="/analytics" 
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Statistiques
-              </Link>
+
               <Link 
                 to="/mentions-legales" 
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"

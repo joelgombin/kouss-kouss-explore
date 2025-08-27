@@ -80,48 +80,28 @@ const MentionsLegales = () => {
               <div>
                 <h3 className="font-semibold text-foreground mb-2">Données collectées</h3>
                 <p className="text-muted-foreground mb-3">
-                  Ce site collecte de manière anonyme les données suivantes pour améliorer l'expérience utilisateur :
+                  Ce site ne collecte aucune donnée personnelle. Aucun système de tracking ou d'analytics n'est utilisé.
                 </p>
-                <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                  <li>Compteur de visites totales (via CounterAPI.dev)</li>
-                  <li>Compteur de visiteurs uniques (via localStorage, sans identification)</li>
-                </ul>
               </div>
 
               <div>
                 <h3 className="font-semibold text-foreground mb-2">Finalité du traitement</h3>
                 <p className="text-muted-foreground">
-                  Ces données sont utilisées uniquement pour :
+                  Aucune donnée n'est collectée, traitée ou stockée.
                 </p>
-                <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                  <li>Comptabiliser le nombre de visites du site</li>
-                  <li>Éviter de compter plusieurs fois le même visiteur</li>
-                  <li>Afficher des statistiques d'audience publiques</li>
-                </ul>
               </div>
 
               <div>
                 <h3 className="font-semibold text-foreground mb-2">Cookies et stockage local</h3>
                 <p className="text-muted-foreground">
-                  Le site utilise uniquement le stockage local du navigateur (localStorage) pour :
-                </p>
-                <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                  <li>Marquer si vous avez déjà été compté comme visiteur unique (clé : "kouss_global_tracked")</li>
-                </ul>
-                <p className="text-muted-foreground mt-2">
-                  Aucun cookie n'est utilisé. Cette donnée reste sur votre appareil et n'est jamais transmise.
+                  Le site n'utilise aucun cookie ni stockage local du navigateur.
                 </p>
               </div>
 
               <div>
                 <h3 className="font-semibold text-foreground mb-2">Service tiers</h3>
                 <p className="text-muted-foreground">
-                  Les statistiques de visite sont collectées via{" "}
-                  <a href="https://counterapi.dev" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                    <strong>CounterAPI.dev</strong>
-                  </a>, 
-                  un service gratuit et respectueux de la vie privée qui ne collecte aucune 
-                  donnée personnelle identifiable.
+                  Aucun service tiers de tracking ou d'analytics n'est utilisé.
                 </p>
               </div>
             </CardContent>

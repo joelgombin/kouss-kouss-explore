@@ -24,7 +24,7 @@ Ce site facilite la découverte du programme du festival Kouss Kouss 2025. Il pe
 - 🔍 **Recherche intelligente** - Filtrage par nom, quartier, type de cuisine
 - 🥗 **Filtres alimentaires** - Végétarien, vegan
 - 📱 **Design responsive** - Optimisé mobile et desktop
-- 📊 **Analytics** - Statistiques sur les restaurants et plats 
+ 
 - 🎨 **Interface moderne** - Design épuré avec shadcn/ui
 
 ## 🛠️ Technologies utilisées
@@ -94,12 +94,12 @@ kouss-kouss-explore/
 │   │   └── ...
 │   ├── pages/          # Pages principales
 │   │   ├── Index.tsx   # Page d'accueil
-│   │   ├── Analytics.tsx # Statistiques
+
 │   │   └── ...
 │   ├── data/           # Données des restaurants (TypeScript)
 │   ├── hooks/          # Hooks React personnalisés
 │   ├── lib/            # Utilitaires
-│   └── services/       # Services (analytics, etc.)
+│   └── services/       # Services
 ├── package.json        # Dépendances et scripts
 ├── vite.config.ts      # Configuration Vite
 ├── tailwind.config.ts  # Configuration Tailwind
