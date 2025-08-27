@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import Database from 'better-sqlite3';
 
@@ -153,5 +154,5 @@ app.listen(PORT, '0.0.0.0', () => {
   const distPath = path.join(__dirname, '../dist');
   const indexPath = path.join(distPath, 'index.html');
   console.log(`Dist path: ${distPath}`);
-  console.log(`Index file exists: ${require('fs').existsSync(indexPath)}`);
+  console.log(`Index file exists: ${fs.existsSync(indexPath)}`);
 });
