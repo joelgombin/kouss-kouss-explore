@@ -5,6 +5,8 @@ import { ArrowLeft, Share2, Calendar, MapPin, Leaf, Sprout, Copy, Check } from "
 import { Plat, Restaurant } from "@/data/restaurants";
 import { useState } from "react";
 import { toast } from "sonner";
+import { LikeButton } from "./LikeButton";
+import { useLikes } from "@/contexts/LikesContext";
 
 interface PlatDetailProps {
   plat: Plat;
@@ -16,6 +18,16 @@ interface PlatDetailProps {
 
 export const PlatDetail = ({ plat, restaurant, platIndex, onBack, onViewRestaurant }: PlatDetailProps) => {
   const [copiedUrl, setCopiedUrl] = useState(false);
+  const { getLikes, updateLikes } = useLikes();
+  
+  // Get current likes count for this dish
+  const currentLikes = restaurant.id ? getLikes(restaurant.id, platIndex) : 0;
+
+  const handleLikeUpdate = (newCount: number) => {
+    if (restaurant.id) {
+      updateLikes(restaurant.id, platIndex, newCount);
+    }
+  };
 
   const formatDatesWithServices = (dates: { jour: number; mois: number }[], services: string[]) => {
     if (dates.length === 0) return "Dates non spécifiées";
@@ -104,8 +116,19 @@ export const PlatDetail = ({ plat, restaurant, platIndex, onBack, onViewRestaura
                 )}
               </div>
             </div>
-            <div className="text-2xl font-bold text-primary flex-shrink-0 ml-4">
-              {plat.prix}
+            <div className="flex items-center gap-4 flex-shrink-0 ml-4">
+              {restaurant.id && (
+                <LikeButton
+                  restaurantId={restaurant.id}
+                  dishIndex={platIndex}
+                  currentLikes={currentLikes}
+                  onLikeUpdate={handleLikeUpdate}
+                  variant="default"
+                />
+              )}
+              <div className="text-2xl font-bold text-primary">
+                {plat.prix}
+              </div>
             </div>
           </div>
         </CardHeader>

@@ -3,6 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Leaf, Sprout, Calendar, Share2, Eye } from "lucide-react";
 import { Plat } from "@/data/restaurants";
+import { LikeButton } from "./LikeButton";
+import { useLikes } from "@/contexts/LikesContext";
 
 interface PlatCardProps {
   plat: Plat;
@@ -13,6 +15,19 @@ interface PlatCardProps {
 }
 
 export const PlatCard = ({ plat, restaurantId, platIndex, onViewDetails, onShare }: PlatCardProps) => {
+  const { getLikes, updateLikes } = useLikes();
+  
+  // Get current likes count for this dish
+  const currentLikes = restaurantId && platIndex !== undefined 
+    ? getLikes(restaurantId, platIndex) 
+    : 0;
+
+  const handleLikeUpdate = (newCount: number) => {
+    if (restaurantId && platIndex !== undefined) {
+      updateLikes(restaurantId, platIndex, newCount);
+    }
+  };
+
   const formatDatesWithServices = (dates: { jour: number; mois: number }[], services: string[]) => {
     if (dates.length === 0) return "Dates non spécifiées";
     
@@ -42,8 +57,19 @@ export const PlatCard = ({ plat, restaurantId, platIndex, onViewDetails, onShare
           <CardTitle className="text-lg font-bold text-foreground leading-tight pr-2">
             {plat.nom}
           </CardTitle>
-          <div className="text-lg font-bold text-primary flex-shrink-0">
-            {plat.prix}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            {restaurantId && platIndex !== undefined && (
+              <LikeButton
+                restaurantId={restaurantId}
+                dishIndex={platIndex}
+                currentLikes={currentLikes}
+                onLikeUpdate={handleLikeUpdate}
+                variant="compact"
+              />
+            )}
+            <div className="text-lg font-bold text-primary">
+              {plat.prix}
+            </div>
           </div>
         </div>
         

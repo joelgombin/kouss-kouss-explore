@@ -10,10 +10,11 @@ import { RestaurantCard } from "@/components/RestaurantCard";
 import { RestaurantDetail } from "@/components/RestaurantDetail";
 import { PlatCard } from "@/components/PlatCard";
 import { PlatDetail } from "@/components/PlatDetail";
-import { FilterBar } from "@/components/FilterBar";
+import { FilterBar, SortOption } from "@/components/FilterBar";
 import Map from "@/components/Map";
 import heroImage from "@/assets/hero-kouss-kouss.jpg";
 import { toast } from "sonner";
+import { useLikes } from "@/contexts/LikesContext";
 
 
 // Interface pour un plat enrichi avec les infos du restaurant
@@ -29,7 +30,7 @@ interface PlatWithRestaurant extends Plat {
 const Index = () => {
   const { restaurantId, platIndex } = useParams();
   const navigate = useNavigate();
-  
+  const { getLikes } = useLikes();
 
   
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
@@ -39,6 +40,7 @@ const Index = () => {
   const [showVegan, setShowVegan] = useState(false);
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<{jour: number, mois: number} | null>(null);
+  const [sortBy, setSortBy] = useState<SortOption>('default');
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -123,9 +125,56 @@ const Index = () => {
     );
   }, [restaurants]);
 
+  // Fonction utilitaire pour le tri
+  const sortItems = <T extends { nom: string; prix?: string }>(items: T[], sortOption: SortOption, getItemLikes?: (item: T, index: number) => number): T[] => {
+    const sorted = [...items];
+    
+    switch (sortOption) {
+      case 'likes-desc':
+        if (getItemLikes) {
+          sorted.sort((a, b) => getItemLikes(b, sorted.indexOf(b)) - getItemLikes(a, sorted.indexOf(a)));
+        }
+        break;
+      case 'likes-asc':
+        if (getItemLikes) {
+          sorted.sort((a, b) => getItemLikes(a, sorted.indexOf(a)) - getItemLikes(b, sorted.indexOf(b)));
+        }
+        break;
+      case 'name-asc':
+        sorted.sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+        break;
+      case 'name-desc':
+        sorted.sort((a, b) => b.nom.localeCompare(a.nom, 'fr'));
+        break;
+      case 'price-asc':
+        if (items[0]?.prix) {
+          sorted.sort((a, b) => {
+            const priceA = parseFloat(a.prix?.replace('€', '').replace(',', '.') || '0');
+            const priceB = parseFloat(b.prix?.replace('€', '').replace(',', '.') || '0');
+            return priceA - priceB;
+          });
+        }
+        break;
+      case 'price-desc':
+        if (items[0]?.prix) {
+          sorted.sort((a, b) => {
+            const priceA = parseFloat(a.prix?.replace('€', '').replace(',', '.') || '0');
+            const priceB = parseFloat(b.prix?.replace('€', '').replace(',', '.') || '0');
+            return priceB - priceA;
+          });
+        }
+        break;
+      default:
+        // Keep original order for 'default'
+        break;
+    }
+    
+    return sorted;
+  };
+
   // Filtrage des restaurants
   const filteredRestaurants = useMemo(() => {
-    return restaurants.filter(restaurant => {
+    const filtered = restaurants.filter(restaurant => {
       // Recherche par nom de restaurant ou plat
       const matchesSearch = searchTerm === "" || 
         restaurant.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -155,11 +204,20 @@ const Index = () => {
 
       return matchesSearch && matchesDiet && matchesService && matchesDate;
     });
-  }, [restaurants, searchTerm, showVegetarian, showVegan, selectedService, selectedDate]);
+
+    // Apply sorting to restaurants
+    return sortItems(filtered, sortBy, (restaurant) => {
+      // For restaurants, get the sum of likes for all their dishes
+      if (!restaurant.id) return 0;
+      return restaurant.plats.reduce((sum, _, index) => {
+        return sum + getLikes(restaurant.id!, index);
+      }, 0);
+    });
+  }, [restaurants, searchTerm, showVegetarian, showVegan, selectedService, selectedDate, sortBy, getLikes]);
 
   // Filtrage des plats
   const filteredPlats = useMemo(() => {
-    return allPlats.filter(plat => {
+    const filtered = allPlats.filter(plat => {
       // Recherche par nom de plat, description ou restaurant
       const matchesSearch = searchTerm === "" || 
         plat.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -183,7 +241,15 @@ const Index = () => {
 
       return matchesSearch && matchesDiet && matchesService && matchesDate;
     });
-  }, [allPlats, searchTerm, showVegetarian, showVegan, selectedService, selectedDate]);
+
+    // Apply sorting to dishes
+    return sortItems(filtered, sortBy, (plat) => {
+      const restaurant = restaurants.find(r => r.id === plat.restaurant.id);
+      if (!restaurant) return 0;
+      const platIndex = restaurant.plats.findIndex(p => p.nom === plat.nom && p.description === plat.description);
+      return platIndex !== -1 ? getLikes(plat.restaurant.id, platIndex) : 0;
+    });
+  }, [allPlats, searchTerm, showVegetarian, showVegan, selectedService, selectedDate, sortBy, restaurants, getLikes]);
 
   // Liste des restaurants à afficher (prend en compte le contexte de sélection)
   const displayedRestaurants = useMemo(() => {
@@ -431,6 +497,8 @@ const Index = () => {
           onServiceChange={setSelectedService}
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
           restaurants={restaurants}
           plats={allPlats}
           onRestaurantSelect={(restaurant) => {

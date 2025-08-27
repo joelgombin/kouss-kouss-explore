@@ -6,6 +6,7 @@ export interface Plat {
   vegan: boolean;
   dates: { jour: number; mois: number }[];
   services: string[];
+  likes?: number;
 }
 
 export interface Restaurant {

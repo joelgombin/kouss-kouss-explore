@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, X, Leaf, Sprout, Clock, Calendar } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, Filter, X, Leaf, Sprout, Clock, Calendar, ArrowUpDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { SmartSearchBar } from "./SmartSearchBar";
 import { Restaurant, Plat } from "@/data/restaurants";
+import { ChickpeaIcon } from "./ChickpeaIcon";
 
 interface PlatWithRestaurant extends Plat {
   restaurant: {
@@ -15,6 +17,8 @@ interface PlatWithRestaurant extends Plat {
     chef: string | null;
   };
 }
+
+export type SortOption = 'default' | 'likes-desc' | 'likes-asc' | 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc';
 
 interface FilterBarProps {
   searchTerm: string;
@@ -27,6 +31,8 @@ interface FilterBarProps {
   onServiceChange: (service: string | null) => void;
   selectedDate: {jour: number, mois: number} | null;
   onDateChange: (date: {jour: number, mois: number} | null) => void;
+  sortBy?: SortOption;
+  onSortChange?: (sort: SortOption) => void;
   // Nouvelles props pour la recherche intelligente
   restaurants?: Restaurant[];
   plats?: PlatWithRestaurant[];
@@ -47,6 +53,8 @@ export const FilterBar = ({
   onServiceChange,
   selectedDate,
   onDateChange,
+  sortBy = 'default',
+  onSortChange,
   restaurants = [],
   plats = [],
   onRestaurantSelect,
@@ -113,6 +121,34 @@ export const FilterBar = ({
               className="pl-10 bg-card border-border/50 focus:ring-primary"
             />
           </div>
+        )}
+        
+        {onSortChange && (
+          <Select value={sortBy} onValueChange={onSortChange}>
+            <SelectTrigger className="w-48 border-border/50">
+              <ArrowUpDown className="h-4 w-4 mr-2" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="default">Par défaut</SelectItem>
+              <SelectItem value="likes-desc">
+                <div className="flex items-center gap-2">
+                  <ChickpeaIcon className="h-3 w-3" />
+                  Plus populaires
+                </div>
+              </SelectItem>
+              <SelectItem value="likes-asc">
+                <div className="flex items-center gap-2">
+                  <ChickpeaIcon className="h-3 w-3" />
+                  Moins populaires
+                </div>
+              </SelectItem>
+              <SelectItem value="name-asc">Nom (A-Z)</SelectItem>
+              <SelectItem value="name-desc">Nom (Z-A)</SelectItem>
+              <SelectItem value="price-asc">Prix croissant</SelectItem>
+              <SelectItem value="price-desc">Prix décroissant</SelectItem>
+            </SelectContent>
+          </Select>
         )}
         
         <Button

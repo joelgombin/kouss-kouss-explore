@@ -29,3 +29,9 @@ deploy.tar
 captain-definition
 deploy.sh
 .env
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+server/likes.db
