@@ -124,20 +124,34 @@ app.get('/api/likes/top/:limit?', (req, res) => {
   }
 });
 
+// Health check endpoint for CapRover
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
 // Serve the React app for all non-API routes
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 // Graceful shutdown
-process.on('SIGINT', () => {
-  console.log('Closing database connection...');
+const gracefulShutdown = (signal) => {
+  console.log(`Received ${signal}. Closing database connection...`);
   db.close();
   process.exit(0);
-});
+};
+
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`API available at http://localhost:${PORT}/api`);
   console.log(`Frontend dev server should proxy /api requests to this server`);
+  
+  // Check if dist directory exists
+  const distPath = path.join(__dirname, '../dist');
+  const indexPath = path.join(distPath, 'index.html');
+  console.log(`Dist path: ${distPath}`);
+  console.log(`Index file exists: ${require('fs').existsSync(indexPath)}`);
 });
