@@ -34,3 +34,5 @@ deploy.sh
 *.sqlite
 *.sqlite3
 server/likes.db
+server/uploads/*
+*.svg
