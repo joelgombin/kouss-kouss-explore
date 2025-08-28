@@ -10441,6 +10441,16 @@
   },
   {
     "nom": "CHEZ MAGALI",
+    "adresse": "38 Plage de l'Estaque",
+    "telephone": null,
+    "chef": null,
+    "plats": [],
+    "longitude": 5.314906,
+    "latitude": 43.360359,
+"geocoding_status": "success"
+  },
+  {
+    "nom": "CHEZ FREDDY",
     "adresse": "42 Plage de l'Estaque",
     "telephone": null,
     "chef": null,
@@ -10450,23 +10460,13 @@
     "geocoding_status": "success"
   },
   {
-    "nom": "CHEZ FREDDY",
-    "adresse": "36 Plage de l'Estaque",
+    "nom": "LOU GOUSTADO DE L'ESTACO",
+    "adresse": "36 plage de l'Estaque",
     "telephone": null,
     "chef": null,
     "plats": [],
     "longitude": 5.315202,
     "latitude": 43.360217,
-    "geocoding_status": "success"
-  },
-  {
-    "nom": "LOU GOUSTADO DE L'ESTACO",
-    "adresse": "38 plage de l'Estaque",
-    "telephone": null,
-    "chef": null,
-    "plats": [],
-    "longitude": 5.314906,
-    "latitude": 43.360359,
     "geocoding_status": "success"
   },
   {
@@ -11773,7 +11773,7 @@
   },
   {
     "nom": "M RENCONTRE",
-    "adresse": "8 Rue Sainte-Victoire - 13001 Marseille",
+    "adresse": "8 Rue Sainte-Victoire - 13006 Marseille",
     "telephone": "09 51 89 18 38",
     "chef": null,
     "plats": [
