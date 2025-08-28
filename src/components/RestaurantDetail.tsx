@@ -5,6 +5,7 @@ import { ArrowLeft, MapPin, Phone, ChefHat, Utensils } from "lucide-react";
 import { Restaurant } from "@/data/restaurants";
 import { PlatCard } from "./PlatCard";
 import MiniMap from "./MiniMap";
+import { useNavigate } from 'react-router-dom';
 
 interface RestaurantDetailProps {
   restaurant: Restaurant;
@@ -12,6 +13,7 @@ interface RestaurantDetailProps {
 }
 
 export const RestaurantDetail = ({ restaurant, onBack }: RestaurantDetailProps) => {
+  const navigate = useNavigate();
   return (
     <div className="space-y-6">
       {/* Header avec bouton retour */}
@@ -86,7 +88,18 @@ export const RestaurantDetail = ({ restaurant, onBack }: RestaurantDetailProps) 
         
         <div className="grid gap-4 md:grid-cols-2">
           {restaurant.plats.map((plat, index) => (
-            <PlatCard key={index} plat={plat} />
+            <PlatCard 
+              key={index} 
+              plat={plat}
+              restaurantId={restaurant.id}
+              platIndex={index}
+              onViewDetails={() => navigate(`/restaurant/${restaurant.id}/plat/${index}`)}
+              onShare={() => {
+                const url = `${window.location.origin}/restaurant/${restaurant.id}/plat/${index}`;
+                navigator.clipboard.writeText(url);
+                // Toast notification handled by PlatCard
+              }}
+            />
           ))}
         </div>
       </div>
