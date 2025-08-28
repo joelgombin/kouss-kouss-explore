@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Leaf, Sprout, Calendar, Share2, Eye } from "lucide-react";
 import { Plat } from "@/data/restaurants";
 import { LikeButton } from "./LikeButton";
+import { PhotoGallery } from "./PhotoGallery";
 import { useLikes } from "@/contexts/LikesContext";
 
 interface PlatCardProps {
@@ -99,6 +100,14 @@ export const PlatCard = ({ plat, restaurantId, platIndex, onViewDetails, onShare
           <Calendar className="h-4 w-4 flex-shrink-0" />
           <span>{formatDatesWithServices(plat.dates, plat.services)}</span>
         </div>
+
+        {/* Galerie de photos */}
+        {restaurantId && platIndex !== undefined && (
+          <PhotoGallery
+            restaurantId={restaurantId}
+            dishIndex={platIndex}
+          />
+        )}
 
         {/* Boutons d'action */}
         {(onViewDetails || onShare) && (

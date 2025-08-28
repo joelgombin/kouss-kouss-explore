@@ -6,6 +6,7 @@ import { Plat, Restaurant } from "@/data/restaurants";
 import { useState } from "react";
 import { toast } from "sonner";
 import { LikeButton } from "./LikeButton";
+import { PhotoGallery } from "./PhotoGallery";
 import { useLikes } from "@/contexts/LikesContext";
 
 interface PlatDetailProps {
@@ -147,6 +148,15 @@ export const PlatDetail = ({ plat, restaurant, platIndex, onBack, onViewRestaura
               <Calendar className="h-5 w-5 flex-shrink-0" />
               <span>{formatDatesWithServices(plat.dates, plat.services)}</span>
             </div>
+          </div>
+
+          {/* Galerie de photos */}
+          <div>
+            <h3 className="text-lg font-semibold text-foreground mb-3">Photos</h3>
+            <PhotoGallery
+              restaurantId={restaurant.id}
+              dishIndex={platIndex}
+            />
           </div>
 
           {/* Boutons d'action */}
