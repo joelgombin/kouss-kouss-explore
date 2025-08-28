@@ -55,6 +55,7 @@ const Map = ({ restaurants, onRestaurantSelect, selectedRestaurant, onRestaurant
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>(null);
   const currentTileLayerRef = useRef<L.TileLayer | null>(null);
+  const userLocationMarkerRef = useRef<L.Marker | null>(null);
   const [currentStyle, setCurrentStyle] = useState<keyof typeof tileStyles>('cartodb');
   const [showStyleSelector, setShowStyleSelector] = useState(false);
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
@@ -82,8 +83,27 @@ const Map = ({ restaurants, onRestaurantSelect, selectedRestaurant, onRestaurant
         const { latitude, longitude } = position.coords;
         setUserLocation({ lat: latitude, lng: longitude });
         
-        // Centrer la carte sur la position de l'utilisateur
+        // Créer ou mettre à jour le marqueur de position utilisateur
         if (mapInstanceRef.current) {
+          // Supprimer l'ancien marqueur s'il existe
+          if (userLocationMarkerRef.current) {
+            mapInstanceRef.current.removeLayer(userLocationMarkerRef.current);
+          }
+
+          // Créer une icône pour la position utilisateur (point bleu avec bordure blanche)
+          const userIcon = L.divIcon({
+            html: `<div style="background-color: #3b82f6; color: white; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>`,
+            iconSize: [16, 16],
+            className: 'user-location-marker'
+          });
+
+          // Ajouter le marqueur de position utilisateur
+          userLocationMarkerRef.current = L.marker([latitude, longitude], { 
+            icon: userIcon,
+            zIndexOffset: 1000 // S'assurer qu'il est au-dessus des autres marqueurs
+          }).addTo(mapInstanceRef.current);
+
+          // Centrer la carte sur la position de l'utilisateur
           mapInstanceRef.current.setView([latitude, longitude], 15, {
             animate: true
           });
@@ -126,6 +146,12 @@ const Map = ({ restaurants, onRestaurantSelect, selectedRestaurant, onRestaurant
 
     return () => {
       if (mapInstanceRef.current) {
+        // Nettoyer le marqueur de position utilisateur
+        if (userLocationMarkerRef.current) {
+          mapInstanceRef.current.removeLayer(userLocationMarkerRef.current);
+          userLocationMarkerRef.current = null;
+        }
+        
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
@@ -265,6 +291,16 @@ const Map = ({ restaurants, onRestaurantSelect, selectedRestaurant, onRestaurant
       });
     }
   }, [selectedRestaurant]);
+
+  // Effet pour mettre à jour le marqueur de position utilisateur
+  useEffect(() => {
+    if (!mapInstanceRef.current || !userLocation) return;
+
+    // Mettre à jour la position du marqueur si elle change
+    if (userLocationMarkerRef.current) {
+      userLocationMarkerRef.current.setLatLng([userLocation.lat, userLocation.lng]);
+    }
+  }, [userLocation]);
 
   // Fonction globale pour la sélection depuis le popup
   useEffect(() => {
