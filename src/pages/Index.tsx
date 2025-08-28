@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +36,9 @@ const Index = () => {
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const [hoveredRestaurant, setHoveredRestaurant] = useState<Restaurant | null>(null);
   const [selectedPlat, setSelectedPlat] = useState<{ plat: Plat; restaurant: Restaurant; index: number } | null>(null);
+  
+  // Ref pour la zone de scroll des restaurants
+  const restaurantListRef = useRef<HTMLDivElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showVegetarian, setShowVegetarian] = useState(false);
   const [showVegan, setShowVegan] = useState(false);
@@ -48,6 +51,22 @@ const Index = () => {
   const [showMap, setShowMap] = useState(true);
   const [viewMode, setViewMode] = useState<'restaurants' | 'plats'>('restaurants');
   const [searchFromSmartBar, setSearchFromSmartBar] = useState(false);
+
+  // Effet pour scroller vers le restaurant hoveré
+  useEffect(() => {
+    if (!hoveredRestaurant || !restaurantListRef.current) return;
+
+    // Trouver l'élément du restaurant dans la liste
+    const restaurantElement = restaurantListRef.current.querySelector(`[data-restaurant-id="${hoveredRestaurant.id}"]`);
+    if (restaurantElement) {
+      // Scroller doucement vers cet élément
+      restaurantElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest'
+      });
+    }
+  }, [hoveredRestaurant]);
   
 
 
@@ -611,15 +630,19 @@ const Index = () => {
                       </p>
                     </div>
                     
-                    <div className="max-h-[500px] xl:max-h-[600px] overflow-y-auto space-y-4 pr-2">
+                    <div 
+                      ref={restaurantListRef}
+                      className="max-h-[500px] xl:max-h-[600px] overflow-y-auto space-y-4 pr-2"
+                    >
                       {displayedRestaurants.map((restaurant) => (
                         <div 
                           key={restaurant.id}
+                          data-restaurant-id={restaurant.id}
                           className={`transition-all duration-200 cursor-pointer ${
                             selectedRestaurant?.id === restaurant.id 
                               ? 'ring-2 ring-primary ring-offset-2' 
                               : hoveredRestaurant?.id === restaurant.id
-                              ? 'ring-2 ring-orange-400 ring-offset-2 shadow-lg'
+                              ? 'bg-orange-50/70 border border-orange-200/50 rounded-lg'
                               : ''
                           }`}
                           onClick={() => {
