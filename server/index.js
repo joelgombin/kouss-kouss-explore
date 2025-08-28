@@ -11,11 +11,17 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Initialize SQLite database with persistent storage
-const dataDir = process.env.NODE_ENV === 'production' ? '/app/data' : __dirname;
+// Initialize SQLite database with persistent storage  
+// Use /app/data in production (CapRover sets PORT=3000), local directory in development
+const dataDir = process.env.PORT === '3000' ? '/app/data' : __dirname;
 const dbPath = path.join(dataDir, 'likes.db');
-const db = new Database(dbPath);
 
+// Ensure data directory exists
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
+const db = new Database(dbPath);
 console.log(`Database initialized at: ${dbPath}`);
 
 // Create likes table if it doesn't exist
