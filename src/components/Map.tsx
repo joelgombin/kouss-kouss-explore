@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import L from "leaflet";
 import { Restaurant } from "@/data/restaurants";
 import { Button } from "@/components/ui/button";
-import { Layers } from "lucide-react";
+import { Layers, Navigation } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 
 // Fix pour les icônes par défaut de Leaflet
@@ -53,10 +53,12 @@ interface MapProps {
 const Map = ({ restaurants, onRestaurantSelect, selectedRestaurant, onRestaurantHover, hoveredRestaurant, className = "" }: MapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
-  const markersRef = useRef<L.Marker[]>([]);
+  const markersRef = useRef<L.Marker[]>(null);
   const currentTileLayerRef = useRef<L.TileLayer | null>(null);
   const [currentStyle, setCurrentStyle] = useState<keyof typeof tileStyles>('cartodb');
   const [showStyleSelector, setShowStyleSelector] = useState(false);
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
   
   // Stabiliser les callbacks pour éviter les re-rendus
   const handleRestaurantSelect = useCallback((restaurant: Restaurant) => {
@@ -67,11 +69,48 @@ const Map = ({ restaurants, onRestaurantSelect, selectedRestaurant, onRestaurant
     onRestaurantHover?.(restaurant);
   }, [onRestaurantHover]);
 
+  // Fonction pour obtenir la position de l'utilisateur
+  const getUserLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      console.warn('Géolocalisation non supportée');
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ lat: latitude, lng: longitude });
+        
+        // Centrer la carte sur la position de l'utilisateur
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.setView([latitude, longitude], 15, {
+            animate: true
+          });
+        }
+        setIsLocating(false);
+      },
+      (error) => {
+        console.warn('Erreur de géolocalisation:', error);
+        setIsLocating(false);
+        // En cas d'erreur, centrer sur Marseille
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.setView([43.2965, 5.3698], 13);
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    );
+  }, []);
+
   useEffect(() => {
     if (!mapRef.current) return;
 
-    // Initialiser la carte centrée sur Marseille
-    const map = L.map(mapRef.current).setView([43.2965, 5.3698], 13);
+    // Initialiser la carte
+    const map = L.map(mapRef.current);
     mapInstanceRef.current = map;
 
     // Ajouter le style de tuiles par défaut
@@ -82,13 +121,16 @@ const Map = ({ restaurants, onRestaurantSelect, selectedRestaurant, onRestaurant
     }).addTo(map);
     currentTileLayerRef.current = tileLayer;
 
+    // Essayer de centrer sur la position de l'utilisateur, sinon Marseille
+    getUserLocation();
+
     return () => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [getUserLocation]);
 
   // Effet pour changer le style de tuiles
   useEffect(() => {
@@ -113,9 +155,11 @@ const Map = ({ restaurants, onRestaurantSelect, selectedRestaurant, onRestaurant
     if (!mapInstanceRef.current || !restaurants.length) return;
 
     // Nettoyer les marqueurs existants
-    markersRef.current.forEach(marker => {
-      mapInstanceRef.current?.removeLayer(marker);
-    });
+    if (markersRef.current) {
+      markersRef.current.forEach(marker => {
+        mapInstanceRef.current?.removeLayer(marker);
+      });
+    }
     markersRef.current = [];
 
     // Ajouter les nouveaux marqueurs
@@ -252,14 +296,30 @@ const Map = ({ restaurants, onRestaurantSelect, selectedRestaurant, onRestaurant
 
   return (
     <div className={`relative ${className}`}>
-      {/* Sélecteur de style de carte */}
-      <div className="absolute top-4 right-4 z-[1000]" onClick={(e) => e.stopPropagation()}>
+      {/* Contrôles de la carte */}
+      <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
+        {/* Bouton de géolocalisation */}
+        <div className="bg-background/95 backdrop-blur-sm rounded-lg border border-border/50 shadow-lg">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={getUserLocation}
+            disabled={isLocating}
+            className="p-2 h-auto"
+            title="Ma position"
+          >
+            <Navigation className={`h-4 w-4 ${isLocating ? 'animate-spin' : ''}`} />
+          </Button>
+        </div>
+
+        {/* Sélecteur de style de carte */}
         <div className="bg-background/95 backdrop-blur-sm rounded-lg border border-border/50 shadow-lg">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setShowStyleSelector(!showStyleSelector)}
             className="p-2 h-auto"
+            title="Style de carte"
           >
             <Layers className="h-4 w-4" />
           </Button>
