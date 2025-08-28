@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import L from "leaflet";
 import { Restaurant } from "@/data/restaurants";
 import { Button } from "@/components/ui/button";
@@ -45,16 +45,27 @@ interface MapProps {
   restaurants: Restaurant[];
   onRestaurantSelect?: (restaurant: Restaurant) => void;
   selectedRestaurant?: Restaurant | null;
+  onRestaurantHover?: (restaurant: Restaurant | null) => void;
+  hoveredRestaurant?: Restaurant | null;
   className?: string;
 }
 
-const Map = ({ restaurants, onRestaurantSelect, selectedRestaurant, className = "" }: MapProps) => {
+const Map = ({ restaurants, onRestaurantSelect, selectedRestaurant, onRestaurantHover, hoveredRestaurant, className = "" }: MapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
   const currentTileLayerRef = useRef<L.TileLayer | null>(null);
   const [currentStyle, setCurrentStyle] = useState<keyof typeof tileStyles>('cartodb');
   const [showStyleSelector, setShowStyleSelector] = useState(false);
+  
+  // Stabiliser les callbacks pour éviter les re-rendus
+  const handleRestaurantSelect = useCallback((restaurant: Restaurant) => {
+    onRestaurantSelect?.(restaurant);
+  }, [onRestaurantSelect]);
+  
+  const handleRestaurantHover = useCallback((restaurant: Restaurant | null) => {
+    onRestaurantHover?.(restaurant);
+  }, [onRestaurantHover]);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -97,6 +108,7 @@ const Map = ({ restaurants, onRestaurantSelect, selectedRestaurant, className = 
     currentTileLayerRef.current = tileLayer;
   }, [currentStyle]);
 
+  // Effet pour créer les marqueurs (une seule fois)
   useEffect(() => {
     if (!mapInstanceRef.current || !restaurants.length) return;
 
@@ -116,22 +128,18 @@ const Map = ({ restaurants, onRestaurantSelect, selectedRestaurant, className = 
     validRestaurants.forEach(restaurant => {
       if (!restaurant.latitude || !restaurant.longitude) return;
 
-      // Créer une icône personnalisée pour les restaurants sélectionnés
-      const isSelected = selectedRestaurant?.id === restaurant.id;
-      const icon = isSelected ? 
-        L.divIcon({
-          html: `<div style="background-color: #ff6b6b; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🍽️</div>`,
-          iconSize: [25, 25],
-          className: 'custom-marker'
-        }) : 
-        L.divIcon({
-          html: `<div style="background-color: #3b82f6; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🍽️</div>`,
-          iconSize: [20, 20],
-          className: 'custom-marker'
-        });
+      // Créer une icône par défaut
+      const icon = L.divIcon({
+        html: `<div style="background-color: #3b82f6; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🍽️</div>`,
+        iconSize: [20, 20],
+        className: 'custom-marker'
+      });
 
       const marker = L.marker([restaurant.latitude, restaurant.longitude], { icon })
         .addTo(mapInstanceRef.current!);
+
+      // Stocker l'ID du restaurant avec le marqueur
+      (marker as any).restaurantId = restaurant.id;
 
       // Créer le popup avec les informations du restaurant
       const popupContent = `
@@ -146,10 +154,21 @@ const Map = ({ restaurants, onRestaurantSelect, selectedRestaurant, className = 
 
       marker.bindPopup(popupContent);
 
-      // Ajouter un événement de clic sur le marqueur
-      if (onRestaurantSelect) {
+      // Ajouter les événements sur le marqueur
+      if (handleRestaurantSelect) {
         marker.on('click', () => {
-          onRestaurantSelect(restaurant);
+          handleRestaurantSelect(restaurant);
+        });
+      }
+
+      // Ajouter les événements de hover
+      if (handleRestaurantHover) {
+        marker.on('mouseover', () => {
+          handleRestaurantHover(restaurant);
+        });
+
+        marker.on('mouseout', () => {
+          handleRestaurantHover(null);
         });
       }
 
@@ -162,7 +181,35 @@ const Map = ({ restaurants, onRestaurantSelect, selectedRestaurant, className = 
       mapInstanceRef.current.fitBounds(group.getBounds().pad(0.1));
     }
 
-  }, [restaurants, onRestaurantSelect]);
+  }, [restaurants]);
+
+  // Effet séparé pour mettre à jour les styles des marqueurs
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+
+    markersRef.current.forEach(marker => {
+      const restaurantId = (marker as any).restaurantId;
+      const isSelected = selectedRestaurant?.id === restaurantId;
+      const isHovered = hoveredRestaurant?.id === restaurantId;
+      
+      let iconHtml;
+      if (isSelected) {
+        iconHtml = `<div style="background-color: #ff6b6b; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🍽️</div>`;
+      } else if (isHovered) {
+        iconHtml = `<div style="background-color: #f59e0b; color: white; border-radius: 50%; width: 23px; height: 23px; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.4); transform: scale(1.1);">🍽️</div>`;
+      } else {
+        iconHtml = `<div style="background-color: #3b82f6; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🍽️</div>`;
+      }
+
+      const newIcon = L.divIcon({
+        html: iconHtml,
+        iconSize: isSelected ? [25, 25] : isHovered ? [23, 23] : [20, 20],
+        className: 'custom-marker'
+      });
+
+      marker.setIcon(newIcon);
+    });
+  }, [selectedRestaurant, hoveredRestaurant]);
 
   // Effet séparé pour centrer sur le restaurant sélectionné
   useEffect(() => {

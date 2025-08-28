@@ -34,6 +34,7 @@ const Index = () => {
 
   
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
+  const [hoveredRestaurant, setHoveredRestaurant] = useState<Restaurant | null>(null);
   const [selectedPlat, setSelectedPlat] = useState<{ plat: Plat; restaurant: Restaurant; index: number } | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showVegetarian, setShowVegetarian] = useState(false);
@@ -593,6 +594,8 @@ const Index = () => {
                         navigate(`/restaurant/${restaurant.id}`);
                       }}
                       selectedRestaurant={selectedRestaurant}
+                      onRestaurantHover={setHoveredRestaurant}
+                      hoveredRestaurant={hoveredRestaurant}
                       className="w-full h-[500px] xl:h-[600px]"
                     />
                   </div>
@@ -615,11 +618,15 @@ const Index = () => {
                           className={`transition-all duration-200 cursor-pointer ${
                             selectedRestaurant?.id === restaurant.id 
                               ? 'ring-2 ring-primary ring-offset-2' 
+                              : hoveredRestaurant?.id === restaurant.id
+                              ? 'ring-2 ring-orange-400 ring-offset-2 shadow-lg'
                               : ''
                           }`}
                           onClick={() => {
                             navigate(`/restaurant/${restaurant.id}`);
                           }}
+                          onMouseEnter={() => setHoveredRestaurant(restaurant)}
+                          onMouseLeave={() => setHoveredRestaurant(null)}
                         >
                           <RestaurantCard
                             restaurant={restaurant}
