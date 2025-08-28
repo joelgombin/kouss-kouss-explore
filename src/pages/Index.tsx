@@ -584,48 +584,98 @@ const Index = () => {
         {/* Onglets Restaurants/Plats */}
         <div className="mt-8">
           <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'restaurants' | 'plats')} className="w-full">
-            <div className="flex items-center justify-between mb-6">
-              <TabsList className="grid w-auto grid-cols-2">
-                <TabsTrigger value="restaurants" className="flex items-center gap-2">
-                  <Store className="h-4 w-4" />
-                  Restaurants
-                </TabsTrigger>
-                <TabsTrigger value="plats" className="flex items-center gap-2">
-                  <UtensilsCrossed className="h-4 w-4" />
-                  Plats
-                </TabsTrigger>
-              </TabsList>
-              
-              <div className="flex items-center gap-4">
-                {viewMode === 'restaurants' && (
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant={!showMap ? "default" : "outline"}
-                      onClick={() => setShowMap(false)}
-                      size="sm"
-                      className="border-border/50"
-                    >
-                      Liste
-                    </Button>
-                    <Button
-                      variant={showMap ? "default" : "outline"}
-                      onClick={() => setShowMap(true)}
-                      size="sm"
-                      className="border-border/50"
-                    >
-                      <MapPin className="h-4 w-4 mr-2" />
-                      Carte
-                    </Button>
-                  </div>
-                )}
-                <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
-                  {viewMode === 'restaurants' 
-                    ? `${displayedRestaurants.length} restaurant${displayedRestaurants.length > 1 ? 's' : ''}`
-                    : `${filteredPlats.length} plat${filteredPlats.length > 1 ? 's' : ''}`
-                  }
-                </Badge>
+            {isMobile ? (
+              /* Layout mobile : onglets en haut, contrôles en dessous */
+              <div className="space-y-4 mb-6">
+                {/* Onglets en pleine largeur */}
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="restaurants" className="flex items-center gap-2 py-3">
+                    <Store className="h-4 w-4" />
+                    Restaurants
+                  </TabsTrigger>
+                  <TabsTrigger value="plats" className="flex items-center gap-2 py-3">
+                    <UtensilsCrossed className="h-4 w-4" />
+                    Plats
+                  </TabsTrigger>
+                </TabsList>
+                
+                {/* Contrôles et compteur sur une ligne */}
+                <div className="flex items-center justify-between">
+                  {viewMode === 'restaurants' && (
+                    <div className="flex gap-2">
+                      <Button
+                        variant={!showMap ? "default" : "outline"}
+                        onClick={() => setShowMap(false)}
+                        size="default"
+                        className="border-border/50 h-10 px-4"
+                      >
+                        Liste
+                      </Button>
+                      <Button
+                        variant={showMap ? "default" : "outline"}
+                        onClick={() => setShowMap(true)}
+                        size="default"
+                        className="border-border/50 h-10 px-4"
+                      >
+                        <MapPin className="h-4 w-4 mr-2" />
+                        Carte
+                      </Button>
+                    </div>
+                  )}
+                  
+                  <Badge variant="secondary" className="bg-secondary text-secondary-foreground text-sm">
+                    {viewMode === 'restaurants' 
+                      ? `${displayedRestaurants.length} rest.`
+                      : `${filteredPlats.length} plats`
+                    }
+                  </Badge>
+                </div>
               </div>
-            </div>
+            ) : (
+              /* Layout desktop : tout sur une ligne */
+              <div className="flex items-center justify-between mb-6">
+                <TabsList className="grid w-auto grid-cols-2">
+                  <TabsTrigger value="restaurants" className="flex items-center gap-2">
+                    <Store className="h-4 w-4" />
+                    Restaurants
+                  </TabsTrigger>
+                  <TabsTrigger value="plats" className="flex items-center gap-2">
+                    <UtensilsCrossed className="h-4 w-4" />
+                    Plats
+                  </TabsTrigger>
+                </TabsList>
+                
+                <div className="flex items-center gap-4">
+                  {viewMode === 'restaurants' && (
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant={!showMap ? "default" : "outline"}
+                        onClick={() => setShowMap(false)}
+                        size="sm"
+                        className="border-border/50"
+                      >
+                        Liste
+                      </Button>
+                      <Button
+                        variant={showMap ? "default" : "outline"}
+                        onClick={() => setShowMap(true)}
+                        size="default"
+                        className="border-border/50"
+                      >
+                        <MapPin className="h-4 w-4 mr-2" />
+                        Carte
+                      </Button>
+                    </div>
+                  )}
+                  <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                    {viewMode === 'restaurants' 
+                      ? `${displayedRestaurants.length} restaurant${displayedRestaurants.length > 1 ? 's' : ''}`
+                      : `${filteredPlats.length} plat${filteredPlats.length > 1 ? 's' : ''}`
+                    }
+                  </Badge>
+                </div>
+              </div>
+            )}
 
             <TabsContent value="restaurants" className="mt-0">
               {displayedRestaurants.length === 0 ? (
