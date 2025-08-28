@@ -11,8 +11,12 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Initialize SQLite database
-const db = new Database(path.join(__dirname, 'likes.db'));
+// Initialize SQLite database with persistent storage
+const dataDir = process.env.NODE_ENV === 'production' ? '/app/data' : __dirname;
+const dbPath = path.join(dataDir, 'likes.db');
+const db = new Database(dbPath);
+
+console.log(`Database initialized at: ${dbPath}`);
 
 // Create likes table if it doesn't exist
 db.exec(`
