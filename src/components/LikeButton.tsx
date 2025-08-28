@@ -64,7 +64,7 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
           hasAnimated && "animate-pulse",
           className
         )}
-        title="Voter pour ce plat"
+        title="J'ai kiffé ce kousskouss"
       >
         <ChickpeaIcon 
           className={cn(
@@ -88,7 +88,7 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
         hasAnimated && "animate-bounce",
         className
       )}
-      title="Voter pour ce plat - Montrez votre appréciation !"
+      title="J'ai kiffé ce kousskouss - Montrez votre appréciation !"
     >
       <ChickpeaIcon 
         className={cn(
@@ -102,7 +102,7 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
       </span>
       {variant === 'default' && (
         <span className="text-sm text-muted-foreground">
-          {currentLikes === 0 ? 'Voter' : currentLikes === 1 ? 'personne a kiffé ce kousskouss' : 'personnes ont kiffé ce kousskouss'}
+          {currentLikes === 0 ? 'J\'ai kiffé ce kousskouss' : currentLikes === 1 ? 'personne a kiffé ce kousskouss' : 'personnes ont kiffé ce kousskouss'}
         </span>
       )}
     </Button>
