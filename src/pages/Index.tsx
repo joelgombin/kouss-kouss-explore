@@ -15,6 +15,7 @@ import Map from "@/components/Map";
 import heroImage from "@/assets/hero-kouss-kouss.jpg";
 import { toast } from "sonner";
 import { useLikes } from "@/contexts/LikesContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 
 // Interface pour un plat enrichi avec les infos du restaurant
@@ -51,6 +52,7 @@ const Index = () => {
   const [showMap, setShowMap] = useState(true);
   const [viewMode, setViewMode] = useState<'restaurants' | 'plats'>('restaurants');
   const [searchFromSmartBar, setSearchFromSmartBar] = useState(false);
+  const isMobile = useIsMobile();
 
   // Effet pour scroller vers le restaurant hoveré
   useEffect(() => {
@@ -429,81 +431,131 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <div className="relative h-96 overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${heroImage})` }}
-        />
-        <div className="absolute inset-0 bg-black/40" />
-        
-        <div className="relative container mx-auto px-4 h-full flex items-center">
-          <div className="text-white space-y-4">
-            <h1 className="text-5xl font-bold">
-              Kouss•Kouss 2025
-            </h1>
-            <p className="text-xl text-white/90 max-w-2xl">
-              On aime le couscous. On aime le festival Kouss•Kouss. On aime encore plus quand on peut savoir où manger du couscous à Kouss•Kouss.
-            </p>
-            <div className="flex items-center gap-4 text-white/80">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                <span>22 Août - 7 Septembre 2025</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                <span>Marseille</span>
+      {/* Hero Section - Adaptatif selon l'écran */}
+      {isMobile ? (
+        /* Mini-hero pour mobile */
+        <div className="relative h-32 overflow-hidden">
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${heroImage})` }}
+          />
+          <div className="absolute inset-0 bg-black/50" />
+          
+          <div className="relative container mx-auto px-4 h-full flex items-center">
+            <div className="text-white space-y-2">
+              <h1 className="text-2xl font-bold">
+                Kouss•Kouss 2025
+              </h1>
+              <div className="flex items-center gap-3 text-sm text-white/90">
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4" />
+                  <span>22 Août - 7 Sept</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <MapPin className="h-4 w-4" />
+                  <span>Marseille</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        /* Hero complet pour desktop */
+        <div className="relative h-96 overflow-hidden">
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${heroImage})` }}
+          />
+          <div className="absolute inset-0 bg-black/40" />
+          
+          <div className="relative container mx-auto px-4 h-full flex items-center">
+            <div className="text-white space-y-4">
+              <h1 className="text-5xl font-bold">
+                Kouss•Kouss 2025
+              </h1>
+              <p className="text-xl text-white/90 max-w-2xl">
+                On aime le couscous. On aime le festival Kouss•Kouss. On aime encore plus quand on peut savoir où manger du couscous à Kouss•Kouss.
+              </p>
+              <div className="flex items-center gap-4 text-white/80">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  <span>22 Août - 7 Septembre 2025</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  <span>Marseille</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="container mx-auto px-4 py-8">
-        {/* Bannière site non-officiel */}
-        <div className="mb-6">
-          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-blue-200/50 dark:border-blue-800/50">
-            <CardContent className="py-4">
-              <div className="flex items-center gap-3">
-                <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+        {/* Bannière site non-officiel - Adaptatif selon l'écran */}
+        {isMobile ? (
+          /* Bannière compacte pour mobile */
+          <div className="mb-4">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border border-blue-200/50 dark:border-blue-800/50 rounded-lg p-3">
+              <div className="flex items-start gap-2">
+                <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-sm text-blue-800 dark:text-blue-200">
-                    <strong>Site non-officiel</strong> • Ce site facilite la découverte du programme du festival. 
-                    Site officiel : <a href="https://kousskouss.com/" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">kousskouss.com</a>
+                  <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
+                    <strong>Site non-officiel</strong> • Facilite la découverte du festival. 
+                    <a href="https://kousskouss.com/" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline block mt-1">Site officiel : kousskouss.com</a>
                   </p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </div>
+        ) : (
+          /* Bannière complète pour desktop */
+          <div className="mb-6">
+            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-blue-200/50 dark:border-blue-800/50">
+              <CardContent className="py-4">
+                <div className="flex items-center gap-3">
+                  <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      <strong>Site non-officiel</strong> • Ce site facilite la découverte du programme du festival. 
+                      Site officiel : <a href="https://kousskouss.com/" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">kousskouss.com</a>
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
-        {/* Stats rapides */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <Card className="bg-gradient-card border-border/50 shadow-card text-center">
-            <CardContent className="py-6">
-              <div className="text-3xl font-bold text-primary mb-2">{restaurants.length}</div>
-              <div className="text-muted-foreground">Restaurants participants</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-card border-border/50 shadow-card text-center">
-            <CardContent className="py-6">
-              <div className="text-3xl font-bold text-primary mb-2">
-                {allPlats.length}
-              </div>
-              <div className="text-muted-foreground">Plats uniques</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-card border-border/50 shadow-card text-center">
-            <CardContent className="py-6">
-              <div className="text-3xl font-bold text-primary mb-2">
-                {allPlats.filter(p => p.vegetarien || p.vegan).length}
-              </div>
-              <div className="text-muted-foreground">Options végé & vegan</div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Stats rapides - Desktop uniquement */}
+        {!isMobile && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <Card className="bg-gradient-card border-border/50 shadow-card text-center">
+              <CardContent className="py-6">
+                <div className="text-3xl font-bold text-primary mb-2">{restaurants.length}</div>
+                <div className="text-muted-foreground">Restaurants participants</div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gradient-card border-border/50 shadow-card text-center">
+              <CardContent className="py-6">
+                <div className="text-3xl font-bold text-primary mb-2">
+                  {allPlats.length}
+                </div>
+                <div className="text-muted-foreground">Plats uniques</div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gradient-card border-border/50 shadow-card text-center">
+              <CardContent className="py-6">
+                <div className="text-3xl font-bold text-primary mb-2">
+                  {allPlats.filter(p => p.vegetarien || p.vegan).length}
+                </div>
+                <div className="text-muted-foreground">Options végé & vegan</div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Barre de filtres */}
         <FilterBar
@@ -748,34 +800,65 @@ const Index = () => {
           </Tabs>
         </div>
 
-        {/* Footer */}
-        <footer className="mt-16 border-t border-border/50 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-center md:text-left">
-              <h3 className="font-semibold text-foreground mb-2">Kouss Kouss 2025</h3>
-              <p className="text-sm text-muted-foreground">
-                Festival culinaire du Maghreb • 22 Août - 7 Septembre 2025 • Marseille
-              </p>
+        {/* Footer - Adaptatif selon l'écran */}
+        {isMobile ? (
+          /* Footer compact pour mobile */
+          <footer className="mt-12 border-t border-border/50 pt-6">
+            <div className="text-center space-y-3">
+              <div>
+                <h3 className="font-semibold text-foreground text-sm">Kouss Kouss 2025</h3>
+                <p className="text-xs text-muted-foreground">
+                  Festival culinaire du Maghreb • 22 Août - 7 Sept 2025 • Marseille
+                </p>
+              </div>
+              
+              <div className="flex justify-center">
+                <Link 
+                  to="/mentions-legales" 
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  Mentions légales
+                  <ExternalLink className="h-3 w-3" />
+                </Link>
+              </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-
-              <Link 
-                to="/mentions-legales" 
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
-              >
-                Mentions légales
-                <ExternalLink className="h-3 w-3" />
-              </Link>
+            <div className="mt-4 pt-3 border-t border-border/50 text-center">
+              <p className="text-xs text-muted-foreground">
+                © 2025 JG Conseil - Tous droits réservés
+              </p>
             </div>
-          </div>
-          
-          <div className="mt-6 pt-4 border-t border-border/50 text-center">
-            <p className="text-xs text-muted-foreground">
-              © 2025 JG Conseil - Tous droits réservés
-            </p>
-          </div>
-        </footer>
+          </footer>
+        ) : (
+          /* Footer complet pour desktop */
+          <footer className="mt-16 border-t border-border/50 pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="text-center md:text-left">
+                <h3 className="font-semibold text-foreground mb-2">Kouss Kouss 2025</h3>
+                <p className="text-sm text-muted-foreground">
+                  Festival culinaire du Maghreb • 22 Août - 7 Septembre 2025 • Marseille
+                </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+
+                <Link 
+                  to="/mentions-legales" 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  Mentions légales
+                  <ExternalLink className="h-3 w-3" />
+                </Link>
+              </div>
+            </div>
+            
+            <div className="mt-6 pt-4 border-t border-border/50 text-center">
+              <p className="text-xs text-muted-foreground">
+                © 2025 JG Conseil - Tous droits réservés
+              </p>
+            </div>
+          </footer>
+        )}
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { SmartSearchBar } from "./SmartSearchBar";
 import { Restaurant, Plat } from "@/data/restaurants";
 import { ChickpeaIcon } from "./ChickpeaIcon";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface PlatWithRestaurant extends Plat {
   restaurant: {
@@ -63,6 +64,7 @@ export const FilterBar = ({
   useSmartSearch = false
 }: FilterBarProps) => {
   const [showFilters, setShowFilters] = useState(false);
+  const isMobile = useIsMobile();
 
   // Définition des dates du festival Kouss Kouss 2025
   const festivalDates = [
@@ -99,76 +101,156 @@ export const FilterBar = ({
 
   return (
     <div className="space-y-4">
-      {/* Barre de recherche principale */}
-      <div className="flex gap-3">
-        {useSmartSearch && onRestaurantSelect && onViewModeChange ? (
-          <SmartSearchBar
-            searchTerm={searchTerm}
-            onSearchChange={onSearchChange}
-            restaurants={restaurants}
-            plats={plats}
-            onRestaurantSelect={onRestaurantSelect}
-            currentViewMode={currentViewMode}
-            onViewModeChange={onViewModeChange}
-          />
-        ) : (
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Rechercher un restaurant ou un plat..."
-              value={searchTerm}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 bg-card border-border/50 focus:ring-primary"
-            />
+      {/* Layout adaptatif selon l'écran */}
+      {isMobile ? (
+        /* Layout mobile : recherche au-dessus, boutons en dessous */
+        <>
+          {/* Barre de recherche en pleine largeur */}
+          <div>
+            {useSmartSearch && onRestaurantSelect && onViewModeChange ? (
+              <SmartSearchBar
+                searchTerm={searchTerm}
+                onSearchChange={onSearchChange}
+                restaurants={restaurants}
+                plats={plats}
+                onRestaurantSelect={onRestaurantSelect}
+                currentViewMode={currentViewMode}
+                onViewModeChange={onViewModeChange}
+              />
+            ) : (
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Rechercher..."
+                  value={searchTerm}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  className="pl-10 bg-card border-border/50 focus:ring-primary h-12 text-base"
+                />
+              </div>
+            )}
           </div>
-        )}
-        
-        {onSortChange && (
-          <Select value={sortBy} onValueChange={onSortChange}>
-            <SelectTrigger className="w-48 border-border/50">
-              <ArrowUpDown className="h-4 w-4 mr-2" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="default">Par défaut</SelectItem>
-              <SelectItem value="likes-desc">
-                <div className="flex items-center gap-2">
-                  <ChickpeaIcon className="h-3 w-3" />
-                  Plus populaires
-                </div>
-              </SelectItem>
-              <SelectItem value="likes-asc">
-                <div className="flex items-center gap-2">
-                  <ChickpeaIcon className="h-3 w-3" />
-                  Moins populaires
-                </div>
-              </SelectItem>
-              <SelectItem value="name-asc">Nom (A-Z)</SelectItem>
-              <SelectItem value="name-desc">Nom (Z-A)</SelectItem>
-              <SelectItem value="price-asc">Prix croissant</SelectItem>
-              <SelectItem value="price-desc">Prix décroissant</SelectItem>
-            </SelectContent>
-          </Select>
-        )}
-        
-        <Button
-          variant="outline"
-          size="default"
-          onClick={() => setShowFilters(!showFilters)}
-          className="relative border-border/50 hover:bg-accent"
-        >
-          <Filter className="h-4 w-4 mr-2" />
-          Filtres
-          {activeFiltersCount > 0 && (
-            <Badge 
-              variant="secondary" 
-              className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-primary text-primary-foreground text-xs"
+          
+          {/* Boutons de tri et filtres */}
+          <div className="flex gap-3">
+            {onSortChange && (
+              <Select value={sortBy} onValueChange={onSortChange}>
+                <SelectTrigger className="flex-1 border-border/50 h-12">
+                  <ArrowUpDown className="h-4 w-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="default">Par défaut</SelectItem>
+                  <SelectItem value="likes-desc">
+                    <div className="flex items-center gap-2">
+                      <ChickpeaIcon className="h-3 w-3" />
+                      Plus populaires
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="likes-asc">
+                    <div className="flex items-center gap-2">
+                      <ChickpeaIcon className="h-3 w-3" />
+                      Moins populaires
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="name-asc">Nom (A-Z)</SelectItem>
+                  <SelectItem value="name-desc">Nom (Z-A)</SelectItem>
+                  <SelectItem value="price-asc">Prix croissant</SelectItem>
+                  <SelectItem value="price-desc">Prix décroissant</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+            
+            <Button
+              variant="outline"
+              size="default"
+              onClick={() => setShowFilters(!showFilters)}
+              className="relative border-border/50 hover:bg-accent h-12 px-6"
             >
-              {activeFiltersCount}
-            </Badge>
+              <Filter className="h-4 w-4 mr-2" />
+              Filtres
+              {activeFiltersCount > 0 && (
+                <Badge 
+                  variant="secondary" 
+                  className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-primary text-primary-foreground text-xs"
+                >
+                  {activeFiltersCount}
+                </Badge>
+              )}
+            </Button>
+          </div>
+        </>
+      ) : (
+        /* Layout desktop : tout sur une ligne */
+        <div className="flex gap-3">
+          {useSmartSearch && onRestaurantSelect && onViewModeChange ? (
+            <SmartSearchBar
+              searchTerm={searchTerm}
+              onSearchChange={onSearchChange}
+              restaurants={restaurants}
+              plats={plats}
+              onRestaurantSelect={onRestaurantSelect}
+              currentViewMode={currentViewMode}
+              onViewModeChange={onViewModeChange}
+            />
+          ) : (
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Rechercher un restaurant ou un plat..."
+                value={searchTerm}
+                onChange={(e) => onSearchChange(e.target.value)}
+                className="pl-10 bg-card border-border/50 focus:ring-primary"
+              />
+            </div>
           )}
-        </Button>
-      </div>
+          
+          {onSortChange && (
+            <Select value={sortBy} onValueChange={onSortChange}>
+              <SelectTrigger className="w-48 border-border/50">
+                <ArrowUpDown className="h-4 w-4 mr-2" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="default">Par défaut</SelectItem>
+                <SelectItem value="likes-desc">
+                  <div className="flex items-center gap-2">
+                    <ChickpeaIcon className="h-3 w-3" />
+                    Plus populaires
+                  </div>
+                </SelectItem>
+                <SelectItem value="likes-asc">
+                  <div className="flex items-center gap-2">
+                    <ChickpeaIcon className="h-3 w-3" />
+                    Moins populaires
+                  </div>
+                </SelectItem>
+                <SelectItem value="name-asc">Nom (A-Z)</SelectItem>
+                <SelectItem value="name-desc">Nom (Z-A)</SelectItem>
+                <SelectItem value="price-asc">Prix croissant</SelectItem>
+                <SelectItem value="price-desc">Prix décroissant</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+          
+          <Button
+            variant="outline"
+            size="default"
+            onClick={() => setShowFilters(!showFilters)}
+            className="relative border-border/50 hover:bg-accent"
+          >
+            <Filter className="h-4 w-4 mr-2" />
+            Filtres
+            {activeFiltersCount > 0 && (
+              <Badge 
+                variant="secondary" 
+                className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-primary text-primary-foreground text-xs"
+              >
+                {activeFiltersCount}
+              </Badge>
+            )}
+          </Button>
+        </div>
+      )}
 
       {/* Panneau de filtres */}
       {showFilters && (

@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, UtensilsCrossed, Store, Leaf, Sprout } from "lucide-react";
 import { Restaurant, Plat } from "@/data/restaurants";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface PlatWithRestaurant extends Plat {
   restaurant: {
@@ -38,6 +39,7 @@ export const SmartSearchBar = ({
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   // Générer les suggestions basées sur le terme de recherche
   const suggestions = useMemo(() => {
@@ -122,9 +124,9 @@ export const SmartSearchBar = ({
     setHighlightedIndex(-1);
   };
 
-  // Gérer le clic extérieur
+  // Gérer le clic extérieur et les événements tactiles
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (
         suggestionsRef.current && 
         !suggestionsRef.current.contains(event.target as Node) &&
@@ -137,16 +139,20 @@ export const SmartSearchBar = ({
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
 
   return (
     <div className="relative flex-1">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${isMobile ? 'h-5 w-5' : 'h-4 w-4'} text-muted-foreground`} />
         <Input
           ref={inputRef}
-          placeholder="Rechercher un restaurant ou un plat..."
+          placeholder={isMobile ? "Rechercher..." : "Rechercher un restaurant ou un plat..."}
           value={searchTerm}
           onChange={(e) => {
             onSearchChange(e.target.value);
@@ -159,7 +165,11 @@ export const SmartSearchBar = ({
             }
           }}
           onKeyDown={handleKeyDown}
-          className="pl-10 bg-card border-border/50 focus:ring-primary"
+          className={`pl-10 bg-card border-border/50 focus:ring-primary ${
+            isMobile 
+              ? 'h-12 text-base placeholder:text-base touch-manipulation' 
+              : 'h-10 text-sm placeholder:text-sm'
+          }`}
         />
       </div>
 
@@ -167,30 +177,38 @@ export const SmartSearchBar = ({
       {showSuggestions && totalSuggestions > 0 && (
         <Card 
           ref={suggestionsRef}
-          className="absolute top-full left-0 right-0 mt-1 z-[9999] bg-card border-border/50 shadow-lg max-h-96 overflow-y-auto"
+          className={`absolute top-full left-0 right-0 mt-1 z-[9999] bg-card border-border/50 shadow-lg overflow-y-auto ${
+            isMobile 
+              ? 'max-h-[60vh] shadow-2xl' 
+              : 'max-h-96'
+          }`}
         >
           <CardContent className="p-0">
             {/* Suggestions de restaurants */}
             {suggestions.restaurants.length > 0 && (
               <div>
-                <div className="px-3 py-2 text-xs font-medium text-muted-foreground bg-muted/50 flex items-center gap-2">
+                <div className={`px-3 text-xs font-medium text-muted-foreground bg-muted/50 flex items-center gap-2 ${
+                  isMobile ? 'py-3' : 'py-2'
+                }`}>
                   <Store className="h-3 w-3" />
                   RESTAURANTS
                 </div>
                 {suggestions.restaurants.map((restaurant, index) => (
                   <div
                     key={restaurant.id}
-                    className={`px-3 py-2 cursor-pointer transition-colors ${
+                    className={`px-3 cursor-pointer transition-colors ${
+                      isMobile ? 'py-4 min-h-[56px]' : 'py-2'
+                    } ${
                       highlightedIndex === index
                         ? 'bg-accent text-accent-foreground'
-                        : 'hover:bg-accent/50'
+                        : 'hover:bg-accent/50 active:bg-accent/70'
                     }`}
                     onClick={() => selectSuggestion(index)}
                   >
-                    <div className="font-medium">{restaurant.nom}</div>
-                    <div className="text-sm text-muted-foreground">{restaurant.adresse}</div>
+                    <div className={`font-medium ${isMobile ? 'text-base' : 'text-sm'}`}>{restaurant.nom}</div>
+                    <div className={`text-muted-foreground ${isMobile ? 'text-sm' : 'text-sm'}`}>{restaurant.adresse}</div>
                     {restaurant.chef && (
-                      <div className="text-xs text-muted-foreground">{restaurant.chef}</div>
+                      <div className={`text-muted-foreground ${isMobile ? 'text-sm' : 'text-xs'}`}>{restaurant.chef}</div>
                     )}
                   </div>
                 ))}
@@ -200,7 +218,9 @@ export const SmartSearchBar = ({
             {/* Suggestions de plats */}
             {suggestions.plats.length > 0 && (
               <div>
-                <div className="px-3 py-2 text-xs font-medium text-muted-foreground bg-muted/50 flex items-center gap-2">
+                <div className={`px-3 text-xs font-medium text-muted-foreground bg-muted/50 flex items-center gap-2 ${
+                  isMobile ? 'py-3' : 'py-2'
+                }`}>
                   <UtensilsCrossed className="h-3 w-3" />
                   PLATS
                 </div>
@@ -209,34 +229,36 @@ export const SmartSearchBar = ({
                   return (
                     <div
                       key={`${plat.restaurant.id}-${index}`}
-                      className={`px-3 py-2 cursor-pointer transition-colors ${
+                      className={`px-3 cursor-pointer transition-colors ${
+                        isMobile ? 'py-4 min-h-[64px]' : 'py-2'
+                      } ${
                         highlightedIndex === globalIndex
                           ? 'bg-accent text-accent-foreground'
-                          : 'hover:bg-accent/50'
+                          : 'hover:bg-accent/50 active:bg-accent/70'
                       }`}
                       onClick={() => selectSuggestion(globalIndex)}
                     >
-                      <div className="flex items-start justify-between">
+                      <div className={`flex items-start ${isMobile ? 'gap-3' : 'justify-between'}`}>
                         <div className="flex-1">
-                          <div className="font-medium">{plat.nom}</div>
-                          <div className="text-sm text-muted-foreground">
+                          <div className={`font-medium ${isMobile ? 'text-base' : 'text-sm'}`}>{plat.nom}</div>
+                          <div className={`text-muted-foreground ${isMobile ? 'text-sm' : 'text-sm'}`}>
                             Chez {plat.restaurant.nom}
                           </div>
-                          <div className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                          <div className={`text-muted-foreground line-clamp-2 mt-1 ${isMobile ? 'text-sm' : 'text-xs'}`}>
                             {plat.description}
                           </div>
                         </div>
-                        <div className="ml-2 flex flex-col items-end gap-1">
-                          <span className="text-sm font-medium text-primary">{plat.prix}</span>
+                        <div className={`flex flex-col items-end gap-1 ${isMobile ? 'ml-3 min-w-[80px]' : 'ml-2'}`}>
+                          <span className={`font-medium text-primary ${isMobile ? 'text-base' : 'text-sm'}`}>{plat.prix}</span>
                           <div className="flex gap-1">
                             {plat.vegetarien && (
-                              <Badge variant="secondary" className="h-5 px-1">
-                                <Leaf className="h-2 w-2" />
+                              <Badge variant="secondary" className={`px-1 ${isMobile ? 'h-6' : 'h-5'}`}>
+                                <Leaf className={`${isMobile ? 'h-3 w-3' : 'h-2 w-2'}`} />
                               </Badge>
                             )}
                             {plat.vegan && (
-                              <Badge variant="secondary" className="h-5 px-1">
-                                <Sprout className="h-2 w-2" />
+                              <Badge variant="secondary" className={`px-1 ${isMobile ? 'h-6' : 'h-5'}`}>
+                                <Sprout className={`${isMobile ? 'h-3 w-3' : 'h-2 w-2'}`} />
                               </Badge>
                             )}
                           </div>
