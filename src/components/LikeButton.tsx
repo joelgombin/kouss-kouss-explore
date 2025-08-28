@@ -102,7 +102,7 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
       </span>
       {variant === 'default' && (
         <span className="text-sm text-muted-foreground">
-          {currentLikes === 0 ? 'Voter' : currentLikes === 1 ? 'vote' : 'votes'}
+          {currentLikes === 0 ? 'Voter' : currentLikes === 1 ? 'personne a kiffé ce kousskouss' : 'personnes ont kiffé ce kousskouss'}
         </span>
       )}
     </Button>
