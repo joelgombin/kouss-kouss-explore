@@ -9123,7 +9123,7 @@
           {
             "jour": 30,
             "mois": 8
-          },
+          }
         ],
         "services": ["midi"]
       }
