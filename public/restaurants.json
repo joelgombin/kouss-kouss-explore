@@ -4107,7 +4107,7 @@
   {
     "nom": "LE RELAIS 50",
     "adresse": "20 Quai du Port - 13002",
-    "telephone": "06 03 39 14 75",
+    "telephone": "07 58 53 75 92",
     "chef": "Walid Ould Moussa & Hamza Deramchi",
     "plats": [
       {
@@ -9112,38 +9112,10 @@
       {
         "nom": "KOUSS-FOYO-CHICHE",
         "prix": "12-16 €",
-        "description": "Le Foyo est l'une des préparations les plus emblématiques de l'Afrique de l'ouest. À base de fonio, ce couscous délicat originaire du Mali est souvent servi lors des célébrations tels que mariages, fêtes traditionnelles et grandes retrouvailles. Il constitue un plat nourrissant riche en saveurs.",
+        "description": "Le Foyo est l'une des préparations les plus emblématiques de l'Afrique de l'ouest. À base de fonio, ce couscous délicat originaire du Mali est souvent servi lors des célébrations tels que mariages, fêtes traditionnelles et grandes retrouvailles. Il constitue un plat nourrissant riche en saveurs. À déguster sur place ou à emporter jusqu'à 19h.",
         "vegetarien": false,
         "vegan": false,
         "dates": [
-          {
-            "jour": 22,
-            "mois": 8
-          },
-          {
-            "jour": 23,
-            "mois": 8
-          },
-          {
-            "jour": 24,
-            "mois": 8
-          },
-          {
-            "jour": 25,
-            "mois": 8
-          },
-          {
-            "jour": 26,
-            "mois": 8
-          },
-          {
-            "jour": 27,
-            "mois": 8
-          },
-          {
-            "jour": 28,
-            "mois": 8
-          },
           {
             "jour": 29,
             "mois": 8
@@ -9152,40 +9124,8 @@
             "jour": 30,
             "mois": 8
           },
-          {
-            "jour": 31,
-            "mois": 8
-          },
-          {
-            "jour": 1,
-            "mois": 9
-          },
-          {
-            "jour": 2,
-            "mois": 9
-          },
-          {
-            "jour": 3,
-            "mois": 9
-          },
-          {
-            "jour": 4,
-            "mois": 9
-          },
-          {
-            "jour": 5,
-            "mois": 9
-          },
-          {
-            "jour": 6,
-            "mois": 9
-          },
-          {
-            "jour": 7,
-            "mois": 9
-          }
         ],
-        "services": []
+        "services": ["midi"]
       }
     ],
     "longitude": 5.377127,
@@ -16626,7 +16566,7 @@
     "chef": "Noémie",
     "plats": [
       {
-        "nom": "Kemia spéciale",
+        "nom": "Kouss-Vins vivants",
         "prix": "Prix non spécifié",
         "description": "Une kemia spéciale pour le festival qui s'accorde à merveille avec ses vins.",
         "vegetarien": false,
@@ -16669,8 +16609,8 @@
     "geocoding_status": "success"
   },
   {
-    "nom": "NOVOTEL - LE LACYDON",
-    "adresse": "Adresse non spécifiée",
+    "nom": "NOVOTEL - Magâté",
+    "adresse": "36 boulevard Charles Livon - 13007",
     "telephone": "04 96 11 42 11",
     "chef": "SOPHIAN JELLOULI",
     "plats": [
@@ -16699,9 +16639,9 @@
         ]
       }
     ],
-    "longitude": null,
-    "latitude": null,
-    "geocoding_status": "failed"
+    "longitude": 5.359953585855725,
+    "latitude": 43.292866834586086,
+    "geocoding_status": "success"
   },
   {
     "nom": "SOFITEL - LE CARRE",
