@@ -150,6 +150,16 @@ const MentionsLegales = () => {
                   En cas d'erreur ou de demande de modification, contactez-moi.
                 </p>
               </div>
+
+              <div>
+                <h3 className="font-semibold text-foreground mb-2">Photos de plats uploadées par les utilisateurs</h3>
+                <p className="text-muted-foreground">
+                  En uploadant une photo de plat sur ce site, l'utilisateur reconnaît qu'il dispose des droits 
+                  sur l'image utilisée et qu'il accepte son utilisation par le site Kouss Kouss 2025. 
+                  L'utilisateur s'engage à ne pas publier d'images dont il ne détient pas les droits ou 
+                  qui pourraient porter atteinte aux droits de tiers.
+                </p>
+              </div>
             </CardContent>
           </Card>
 
